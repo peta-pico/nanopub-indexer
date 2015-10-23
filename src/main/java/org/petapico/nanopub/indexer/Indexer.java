@@ -26,7 +26,7 @@ public class Indexer {
 		while (serverIterator.hasNext()) {
 			ServerInfo si = serverIterator.next();
 			System.out.println("==========");
-			System.out.println("Server: " + si.getPublicUrl());
+			System.out.println("Server: " + si.getPublicUrl() + "\n");
 			// This is just a test so we only check the first page of nanopubs:
 			int page = 1;
 			int nanopubNumber = 0;
@@ -34,7 +34,7 @@ public class Indexer {
 				System.out.println("Nanopub ID: " + nanopubId);
 				nanopubNumber++;
 				Nanopub np = GetNanopub.get(nanopubId);
-				System.out.println("Nanopub content: " + NanopubUtils.writeToString(np, RDFFormat.TRIG));
+				System.out.println("Nanopub content:\n" + NanopubUtils.writeToString(np, RDFFormat.TRIG) + "\n");
 				if (nanopubNumber > 5) {
 					// This is just a test, so we stop after 5 nanopubs...
 					break;
