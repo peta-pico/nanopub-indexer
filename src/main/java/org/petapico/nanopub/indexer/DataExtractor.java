@@ -36,7 +36,7 @@ public class DataExtractor {
 		
 		int page = 0;
 		int currentNanopub = 0;
-		int totalNanopubs = 1; //(int) (si.getNextNanopubNo()-1);
+		int totalNanopubs = 5; //(int) (si.getNextNanopubNo()-1);
 		while (currentNanopub < totalNanopubs){ //There should be a page left
 			//read from the next page
 			page += 1; 
@@ -48,31 +48,65 @@ public class DataExtractor {
 			
 			for (String nanopubId : nanopubsOnPage) {
 				currentNanopub++;
-				nanopubId = "http://liddi.stanford.edu/LIDDI_resource:SID4081_SID1091_EID4966_nanopub.RA12X7AcvLKucG7Y5ygnf57SiGGj_QXgLfgW-BjqNk7G0";
-				
-				System.out.println("NanopubID: " + nanopubId);
-				
-				String ac = org.nanopub.extra.server.GetNanopub.getArtifactCode(nanopubId); //GET IDENTIFIER
-				System.out.println("ArtifactCode: " + ac);
+				//nanopubId = "http://liddi.stanford.edu/LIDDI_resource:SID4081_SID1091_EID4966_nanopub.RA12X7AcvLKucG7Y5ygnf57SiGGj_QXgLfgW-BjqNk7G0";
 				
 				Nanopub np = GetNanopub.get(nanopubId);
-				System.out.println("Authors:\n" + np.getAuthors().toString());
-				System.out.println("Creators:\n" + np.getCreators().toString());
-				System.out.println("Creationtime:\n" + np.getCreationTime().getTimeInMillis());
-				//System.out.println("Nanopub content:\n" + NanopubUtils.writeToString(np, RDFFormat.TRIG) + "\n");
+				printInsertStatement(np);
 				
-				//np 
-				break; //break after 1 nanopub
+				if (currentNanopub > 4)
+					break; //break after 1 nanopub
 				
 			}
 		}
 		//System.out.println("all pages visited: "+ page);
 	}
 	
-	/* TODO
-	 * create database tuples containing: nanopubID, nanopubURL
-	 * 
-	 */
+	public void printInsertValues(Nanopub np){
+		String nanopubURI = np.getUri().toString();
+		String artifactCode = org.nanopub.extra.server.GetNanopub.getArtifactCode(nanopubURI);
+		String assertionURI = np.getAssertionUri().toString();
+		String headURI = np.getHeadUri().toString();
+		String provenanceURI = np.getProvenanceUri().toString();
+		String pubinfoURI = np.getPubinfoUri().toString();
+		long creationTime = np.getCreationTime().getTimeInMillis();
+		
+		String query = "INSERT INTO nanopubs "
+				+ "(nanopubURI, artifactCode, assertionURI, headURI, provenanceURI, pubinfoURI, creationTime) "
+				+ "VALUES (\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", %d)\n";
+		System.out.printf(query, nanopubURI, artifactCode, assertionURI, headURI, provenanceURI, pubinfoURI, creationTime);
+	}
+	
+	public void printInsertStatement(Nanopub np){
+		String nanopubURI = np.getUri().toString();
+		String artifactCode = org.nanopub.extra.server.GetNanopub.getArtifactCode(nanopubURI);
+		String assertionURI = np.getAssertionUri().toString();
+		String headURI = np.getHeadUri().toString();
+		String provenanceURI = np.getProvenanceUri().toString();
+		String pubinfoURI = np.getPubinfoUri().toString();
+		long creationTime = np.getCreationTime().getTimeInMillis();
+		
+		String query = "INSERT INTO nanopubs "
+				+ "(nanopubURI, artifactCode, assertionURI, headURI, provenanceURI, pubinfoURI, creationTime) "
+				+ "VALUES (\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", %d);\n";
+		System.out.printf(query, nanopubURI, artifactCode, assertionURI, headURI, provenanceURI, pubinfoURI, creationTime);
+	}
+	
+	public void printNanopubInfo(Nanopub np){
+		System.out.println("Authors:        " + np.getAuthors().toString());
+		System.out.println("Creators:       " + np.getCreators().toString());
+		System.out.println("Assertion:      " + np.getAssertion().toString());
+		System.out.println("AssertionURI:   " + np.getAssertionUri().toString());
+		System.out.println("GraphURI:       " + np.getGraphUris().toString());
+		System.out.println("Head:           " + np.getHead().toString());
+		System.out.println("HeadURI:        " + np.getHeadUri().toString());
+		System.out.println("Provenance:     " + np.getProvenance().toString());
+		System.out.println("ProvenanceURI:  " + np.getProvenanceUri().toString());
+		System.out.println("Pubinfo:        " + np.getPubinfo().toString());
+		System.out.println("PubinfoURI:     " + np.getPubinfoUri().toString());
+		System.out.println("URI:            " + np.getUri().toString());
+		System.out.println("Creationtime:   " + np.getCreationTime().getTimeInMillis());
+		//System.out.println("Nanopub content:" + NanopubUtils.writeToString(np, RDFFormat.TRIG) + "\n");
+	}
 	
 	public void printServerList(){
 		ServerIterator serverIterator = new ServerIterator();
