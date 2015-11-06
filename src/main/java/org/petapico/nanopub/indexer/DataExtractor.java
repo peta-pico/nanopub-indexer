@@ -36,11 +36,10 @@ public class DataExtractor {
 		
 		int page = 0;
 		int currentNanopub = 0;
-		int totalNanopubs = (int) (si.getNextNanopubNo()-1);
+		int totalNanopubs = 1; //(int) (si.getNextNanopubNo()-1);
 		while (currentNanopub < totalNanopubs){ //There should be a page left
 			//read from the next page
 			page += 1; 
-			System.out.println("page: " + page);
 			List<String> nanopubsOnPage = NanopubServerUtils.loadNanopubUriList(si, page);
 			
 			if (nanopubsOnPage.size() == 0){
@@ -48,18 +47,26 @@ public class DataExtractor {
 			}
 			
 			for (String nanopubId : nanopubsOnPage) {
-				if (1==1){
-					break;
-				}
-				String ac = org.nanopub.extra.server.GetNanopub.getArtifactCode(nanopubId); //GET IDENTIFIER
-				System.out.println("Nanopub ID: " + ac);
-				
 				currentNanopub++;
+				nanopubId = "http://liddi.stanford.edu/LIDDI_resource:SID4081_SID1091_EID4966_nanopub.RA12X7AcvLKucG7Y5ygnf57SiGGj_QXgLfgW-BjqNk7G0";
+				
+				System.out.println("NanopubID: " + nanopubId);
+				
+				String ac = org.nanopub.extra.server.GetNanopub.getArtifactCode(nanopubId); //GET IDENTIFIER
+				System.out.println("ArtifactCode: " + ac);
+				
 				Nanopub np = GetNanopub.get(nanopubId);
+				System.out.println("Authors:\n" + np.getAuthors().toString());
+				System.out.println("Creators:\n" + np.getCreators().toString());
+				System.out.println("Creationtime:\n" + np.getCreationTime().getTimeInMillis());
 				//System.out.println("Nanopub content:\n" + NanopubUtils.writeToString(np, RDFFormat.TRIG) + "\n");
+				
+				//np 
+				break; //break after 1 nanopub
+				
 			}
 		}
-		System.out.println("all pages visited: "+ page);
+		//System.out.println("all pages visited: "+ page);
 	}
 	
 	/* TODO
