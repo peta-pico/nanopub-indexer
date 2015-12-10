@@ -21,6 +21,10 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 
 public class DataExtractor {
+	public static final int TYPE_HEAD = 1;
+	public static final int TYPE_ASSERTION = 2;
+	public static final int TYPE_PROVENANCE = 3;
+	public static final int TYPE_PUBINFO = 4;
 
 	public DataExtractor() {
 	}
@@ -58,28 +62,21 @@ public class DataExtractor {
 				//retrieve nanopub
 				Nanopub np = GetNanopub.get(nanopubId);
 				
-				//Get essential values of nanopub:
-				/*
-				* Singular values: nanopubURI, artifactCode, creationTime
-				* Insert into database
-				* Sets: Creators, Authors
-				* Insert into corresponding tables
-				 */
+				/*Set<Statement> statements = np.getHead();
+				for (Statement statement : statements){
+					insertStatementInDB(statement);
+				}
+				*/
 				
-				
-				Set<Statement> head = np.getHead();
-				for (Statement headitem : head){
-					URI predicate = headitem.getPredicate();
-					Value object = headitem.getObject();
-					Resource subject = headitem.getSubject();
-					int hashcode = headitem.hashCode();
-					
-					String predicateStr = predicate.toString();
+				//INSERT NP INTO DATABASE
+				insertNpInDatabase(np);
+				try {
+					insertStatementsInDB(np.getHead(), HelperFunctions.getArtifactCode(np), TYPE_HEAD);
+				}
+				catch (Exception E){
 					
 				}
-				
-				
-				//insertNpInDatabase(np);
+				System.out.println("\n");
 			}
 
 			coveredNanopubs += nanopubsOnPage.size();
@@ -89,40 +86,53 @@ public class DataExtractor {
 		System.out.println("Nanopubs done: "+ coveredNanopubs);
 	}
 	
+	public void insertStatementsInDB(Set<Statement> statements, String artifactCode, int type) throws IOException{
+		for (Statement statement : statements){
+			int hashCode = statement.hashCode();
+			
+			insertHashInDB(hashCode, artifactCode, type);
+		}
+		
+	}
 	
+	public void insertHashInDB(int hashCode, String artifactCode, int type) throws IOException{
+		String getUrl = "http://localhost/nanopubs/database/api.php"
+				+ "?table=hashes"
+				+ "&function=insert"
+				+ "&data[]="+hashCode
+				+ "&data[]="+artifactCode
+				+ "&data[]="+type;
+				
+		DatabaseFunctions.executeGetRequest(getUrl);
+		System.out.println("URL: " + getUrl);
+	}
+	
+	public void insertStatementInDB(Statement statement){
+		URI predicate = statement.getPredicate();
+		Value object = statement.getObject();
+		Resource subject = statement.getSubject();
+		int hashcode = statement.hashCode();
+		String predicateStr = predicate.toString();
+		
+	}
 	
 	public void insertNpInDatabase(Nanopub np) throws IOException{
-		String nanopubURI = HelperFunctions.getNanopubURI(np);
-		String artifactCode = HelperFunctions.getArtifactCode(nanopubURI);
-		String assertionURI = HelperFunctions.getAssertionURI(np);
-		String headURI = HelperFunctions.getHeadURI(np);
-		String provenanceURI = HelperFunctions.getProvenanceURI(np);
-		String pubinfoURI = HelperFunctions.getPubinfoURI(np);
-		long creationTime = HelperFunctions.getCreationTime(np);
+		String artifactCode = HelperFunctions.getArtifactCode(np);
+		long creationTime = HelperFunctions.getTimeStamp(np);
+		try {
+			np.getCreationTime().getTimeInMillis();
+		}
+		catch (Exception E){
+			
+		}
 		long timestamp = creationTime / 1000;
-		
 		String getUrl = "http://localhost/nanopubs/database/api.php"
 				+ "?table=nanopubs"
 				+ "&function=insertNanopub"
-				+ "&data[]="+nanopubURI
 				+ "&data[]="+artifactCode
-				+ "&data[]="+assertionURI
-				+ "&data[]="+headURI
-				+ "&data[]="+provenanceURI
-				+ "&data[]="+pubinfoURI
 				+ "&data[]="+timestamp;
-		
-		URL url = new URL(getUrl);
-		
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		
-		if (conn.getResponseCode() != 200) {
-			throw new IOException(conn.getResponseMessage());
-		}
-		
-		conn.disconnect();
-		
-		System.out.println(getUrl);
+		DatabaseFunctions.executeGetRequest(getUrl);
+		System.out.println("artifact: " + artifactCode + "\ntime: " + timestamp + "\nurl: " + getUrl);
 	}
 	
 	

@@ -16,6 +16,18 @@ public final class HelperFunctions {
 		return nanopubURI;
 	}
 	
+	public static String getArtifactCode(Nanopub np){
+		String nanopubURI = "unknown";
+		try {
+			nanopubURI = np.getUri().toString();
+		}
+		catch (Exception E){
+			return "unknown";
+			
+		}
+		return getArtifactCode(np.getUri().toString());
+	}
+	
 	public static String getArtifactCode(String nanopubURI){
 		String artifactCode;
 		try {
@@ -80,6 +92,11 @@ public final class HelperFunctions {
 			creationTime = 0;
 		}
 		return creationTime;
+	}
+	
+	public static long getTimeStamp(Nanopub np){
+		long creationTime = getCreationTime(np);
+		return creationTime/1000;
 	}
 	
 	public static void printInsertStatement(Nanopub np){
