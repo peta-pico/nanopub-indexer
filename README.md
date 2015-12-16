@@ -47,5 +47,6 @@ To compile the script using the command promt, 2 global variables should be set:
 	
 	$ set JAVA_HOME=<Java jdk root dir>
 
-Next of one can run the mvn package command on the nanopub-indexer folder
+Next of one can run the mvn package command on the nanopub-indexer folder:
+
 	$ mvn package

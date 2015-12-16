@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Set;
 
@@ -62,20 +63,17 @@ public class DataExtractor {
 				//retrieve nanopub
 				Nanopub np = GetNanopub.get(nanopubId);
 				
-				/*Set<Statement> statements = np.getHead();
-				for (Statement statement : statements){
-					insertStatementInDB(statement);
-				}
-				*/
-				
 				//INSERT NP INTO DATABASE
 				insertNpInDatabase(np);
+				
+				//insert head into database
 				try {
 					insertStatementsInDB(np.getHead(), HelperFunctions.getArtifactCode(np), TYPE_HEAD);
 				}
 				catch (Exception E){
 					
 				}
+				
 				System.out.println("\n");
 			}
 
@@ -92,32 +90,35 @@ public class DataExtractor {
 	public void insertStatementsInDB(Set<Statement> statements, String artifactCode, int type) throws IOException{
 		//go through every statement
 		for (Statement statement : statements){
-			int hashCode = statement.hashCode(); //retrieve the hashcode -> hashvalue of the whole statement (unique)
-			
-			insertHashInDB(hashCode, artifactCode, type);
+			insertStatementInDB(statement, artifactCode, type);
 		}
 		
-	}
+	}	
 	
-	public void insertHashInDB(int hashCode, String artifactCode, int type) throws IOException{
+	//retrieve all values of a statement: predicate, subject, object, and hashcode and insert them into the database
+	public void insertStatementInDB(Statement statement, String artifactCode, int type) throws IOException{
+		Value object = statement.getObject();
+		URI predicate = statement.getPredicate();
+		Resource subject = statement.getSubject();
+		int hashCode = statement.hashCode(); //retrieve the hashcode -> hashvalue of the whole statement (unique)
+
+		String objectStr = object.stringValue();
+		String predicateStr = predicate.toString();
+		String subjectStr = subject.stringValue();
+		
 		String getUrl = "http://localhost/nanopubs/database/api.php"
-				+ "?table=hashes"
+				+ "?table=statements"
 				+ "&function=insert"
-				+ "&data[]="+hashCode
 				+ "&data[]="+artifactCode
+				+ "&data[]="+hashCode
+				+ "&data[]="+URLEncoder.encode(objectStr, "UTF-8")
+				+ "&data[]="+URLEncoder.encode(predicateStr, "UTF-8")
+				+ "&data[]="+URLEncoder.encode(subjectStr, "UTF-8")
 				+ "&data[]="+type;
 				
 		DatabaseFunctions.executeGetRequest(getUrl);
-		System.out.println("URL: " + getUrl);
-	}
-	
-	public void insertStatementInDB(Statement statement){
-		URI predicate = statement.getPredicate();
-		Value object = statement.getObject();
-		Resource subject = statement.getSubject();
-		int hashcode = statement.hashCode();
-		String predicateStr = predicate.toString();
-		
+		System.out.println("statmentURL: " + getUrl);
+		//insertHashInDB(hashCode, artifactCode, type); //insert the hashcode into database
 	}
 	
 	public void insertNpInDatabase(Nanopub np) throws IOException{
