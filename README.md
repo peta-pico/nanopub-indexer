@@ -30,3 +30,22 @@ You should get an output like this:
     Nanopub content:
     @prefix this: <http://example.org/nanopub-validator-example/RAPpJU5UOB...
     ...
+	
+### Run code (windows + eclipse)
+
+First time run (to be able to import the package in eclipse):
+
+	$ mvn eclipse:eclipse
+	
+Add the external JAR of the Nanopub JAVA library to the project in eclipse
+
+Then you can edit the code. Make sure to use the command promt to compile the scripts before running them in eclipse.
+
+To compile the script using the command promt, 2 global variables should be set: 
+
+	$ set Path=<mvn root dir>\bin;%Path%
+	
+	$ set JAVA_HOME=<Java jdk root dir>
+
+Next of one can run the mvn package command on the nanopub-indexer folder
+	$ mvn package

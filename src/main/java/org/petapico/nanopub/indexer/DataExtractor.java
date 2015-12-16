@@ -86,9 +86,13 @@ public class DataExtractor {
 		System.out.println("Nanopubs done: "+ coveredNanopubs);
 	}
 	
+	
+	//insert a set of statements into a database
+	//statements contain a object, predicate, subject and hashcode
 	public void insertStatementsInDB(Set<Statement> statements, String artifactCode, int type) throws IOException{
+		//go through every statement
 		for (Statement statement : statements){
-			int hashCode = statement.hashCode();
+			int hashCode = statement.hashCode(); //retrieve the hashcode -> hashvalue of the whole statement (unique)
 			
 			insertHashInDB(hashCode, artifactCode, type);
 		}
