@@ -23,6 +23,9 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 
 public class DataExtractor {
+	public static final int CUR_AMOUNT_OF_NANOPUBS = 6370131;
+	public static final int MILLISEC_TO_DAYS = 1000 * 60 * 60 * 24; 
+	
 	public static final int TYPE_HEAD = 1;
 	public static final int TYPE_ASSERTION = 2;
 	public static final int TYPE_PROVENANCE = 3;
@@ -35,40 +38,25 @@ public class DataExtractor {
 	}
 
 	public void run() throws IOException, RDFHandlerException {
-		//Loop through every server
-		ServerIterator serverIterator = new ServerIterator();
-		if (!serverIterator.hasNext()){
-			System.out.println("ERROR: NO SERVERS FOUND");
-			System.exit(0);
-		}
-		
-		//Use first server only for testing purposes
-		ServerInfo si = serverIterator.next();
+		long startTime = System.currentTimeMillis();
+		long currentTime;
+		String server = "http://np.inn.ac/";
 		System.out.println("==========");
-		System.out.println("Server: " + si.getPublicUrl() + "\n");
+		System.out.println("Server: " + server + "\n");
 		
 		//initialize values
 		int page = 1;
 		int coveredNanopubs = 0;
-		int totalNanopubs = (int) (si.getNextNanopubNo()-1);
 		
-		//Loop through every page
-		while (coveredNanopubs < totalNanopubs){
-			//Q: Read all nanopubs from page -> Can this more efficiently? 
-			//out.println("SERVERURI: " + si.getPublicUrl() + "nanopubs?page=" + page); 
+		//Loop until we encounter an empty page
+		while (true){
 			//Q: iS THERE A WAY TO GRAB ALL NP's as list instead of per page?
-			long startTime = System.currentTimeMillis();
-			List<String> nanopubsOnPage = NanopubServerUtils.loadNanopubUriList(si, page);
-			long finishTime = System.currentTimeMillis();
-			System.out.println("That took: "+(finishTime-startTime)+ " ms");
+			List<String> nanopubsOnPage;
 			try {
-				startTime = System.currentTimeMillis();
-				nanopubsOnPage = ServerFunctions.grabNanopubIdsFromPage("http://np.inn.ac/", page);
-				finishTime = System.currentTimeMillis();
-				System.out.println("That took: "+(finishTime-startTime)+ " ms");
+				nanopubsOnPage = ServerFunctions.grabNanopubIdsFromPage(server, page);
 			}
 			catch (Exception E){
-				
+				nanopubsOnPage = NanopubServerUtils.loadNanopubUriList(server, page);	
 			}
 			
 			
@@ -79,51 +67,69 @@ public class DataExtractor {
 			
 			//Go through every nanopub from page
 			for (String nanopubId : nanopubsOnPage) {
-				out.println("id: " + nanopubId);
+				
 				//retrieve nanopub
+				long tb = System.currentTimeMillis();
 				Nanopub np = GetNanopub.get(nanopubId);
+				long te = System.currentTimeMillis();
+				out.println("\t Get nanopub: " + ((te-tb) * CUR_AMOUNT_OF_NANOPUBS) / MILLISEC_TO_DAYS + " days");
 				
 				//INSERT NP INTO DATABASE
+				tb = System.currentTimeMillis();
 				insertNpInDatabase(np);
+				te = System.currentTimeMillis();
+				out.println("\t Insert nanopub: " + ((te-tb) * CUR_AMOUNT_OF_NANOPUBS) / MILLISEC_TO_DAYS + " days");
 				
 				String artifactCode = HelperFunctions.getArtifactCode(np);
 				//insert head into database
 				try {
-					out.println("head");
+					//out.println("head");
+					tb = System.currentTimeMillis();
 					insertStatementsInDB(np.getHead(), artifactCode, TYPE_HEAD);
+					te = System.currentTimeMillis();
+					out.println("\t Head statements: " + ((te-tb) * CUR_AMOUNT_OF_NANOPUBS) / MILLISEC_TO_DAYS + " days");
 				}
 				catch (Exception E){
 					
 				}
+				
 				//insert assertion into database
 				try {
-					out.println("assertion");
+					//out.println("assertion");
+					tb = System.currentTimeMillis();
 					insertStatementsInDB(np.getAssertion(), artifactCode, TYPE_ASSERTION);
+					te = System.currentTimeMillis();
+					out.println("\t Assertion statements: " + ((te-tb) * CUR_AMOUNT_OF_NANOPUBS) / MILLISEC_TO_DAYS + " days");
 				}
 				catch (Exception E){
 					
 				}
 				//insert provenance into database
 				try {
-					out.println("provenance");
+					//out.println("provenance");
+					tb = System.currentTimeMillis();
 					insertStatementsInDB(np.getProvenance(), artifactCode, TYPE_PROVENANCE);
+					te = System.currentTimeMillis();
+					out.println("\t Provenance statements: " + ((te-tb) * CUR_AMOUNT_OF_NANOPUBS) / MILLISEC_TO_DAYS + " days");
 				}
 				catch (Exception E){
 					
 				}
 				//insert pubinfo into database
 				try {
-					out.println("pubinfo");
+					//out.println("pubinfo");
+					tb = System.currentTimeMillis();
 					insertStatementsInDB(np.getPubinfo(), artifactCode, TYPE_PUBINFO);
+					te = System.currentTimeMillis();
+					out.println("\t Pubinfo statements: " + ((te-tb) * CUR_AMOUNT_OF_NANOPUBS) / MILLISEC_TO_DAYS + " days");
 				}
 				catch (Exception E){
 					
 				}
 				
-				System.out.println("\n");
 				coveredNanopubs ++;
-				
-				out.printf("nanopub: %d/%d\n", coveredNanopubs, totalNanopubs);
+				currentTime = System.currentTimeMillis();
+				System.out.println("("+coveredNanopubs+") Estimation time: "+((currentTime-startTime)/coveredNanopubs) * CUR_AMOUNT_OF_NANOPUBS / MILLISEC_TO_DAYS + " days");
 			}
 
 			page += 1;
@@ -177,7 +183,8 @@ public class DataExtractor {
 				+ "&function=insertNanopub"
 				+ "&data[]="+artifactCode
 				+ "&data[]="+timestamp;
-		System.out.println("artifact: " + artifactCode + "\ntime: " + timestamp + "\nurl: " + getUrl);
+		
+		//System.out.println("artifact: " + artifactCode + "\ntime: " + timestamp + "\nurl: " + getUrl);
 		
 		DatabaseFunctions.executeGetRequest(getUrl);
 	}
