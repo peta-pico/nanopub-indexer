@@ -1,6 +1,7 @@
 package org.petapico.nanopub.indexer;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -26,8 +27,11 @@ public class DataExtractor {
 	public static final int TYPE_ASSERTION = 2;
 	public static final int TYPE_PROVENANCE = 3;
 	public static final int TYPE_PUBINFO = 4;
+	
+	PrintStream out;
 
 	public DataExtractor() {
+		out = new PrintStream(System.out);
 	}
 
 	public void run() throws IOException, RDFHandlerException {
@@ -50,8 +54,23 @@ public class DataExtractor {
 		
 		//Loop through every page
 		while (coveredNanopubs < totalNanopubs){
-			//Read all nanopubs from page -> Can this more efficiently? 
+			//Q: Read all nanopubs from page -> Can this more efficiently? 
+			//out.println("SERVERURI: " + si.getPublicUrl() + "nanopubs?page=" + page); 
+			//Q: iS THERE A WAY TO GRAB ALL NP's as list instead of per page?
+			long startTime = System.currentTimeMillis();
 			List<String> nanopubsOnPage = NanopubServerUtils.loadNanopubUriList(si, page);
+			long finishTime = System.currentTimeMillis();
+			System.out.println("That took: "+(finishTime-startTime)+ " ms");
+			try {
+				startTime = System.currentTimeMillis();
+				nanopubsOnPage = ServerFunctions.grabNanopubIdsFromPage("http://np.inn.ac/", page);
+				finishTime = System.currentTimeMillis();
+				System.out.println("That took: "+(finishTime-startTime)+ " ms");
+			}
+			catch (Exception E){
+				
+			}
+			
 			
 			//Check if there are nanopubs on this page
 			if (nanopubsOnPage.size() == 0){
@@ -60,24 +79,53 @@ public class DataExtractor {
 			
 			//Go through every nanopub from page
 			for (String nanopubId : nanopubsOnPage) {
+				out.println("id: " + nanopubId);
 				//retrieve nanopub
 				Nanopub np = GetNanopub.get(nanopubId);
 				
 				//INSERT NP INTO DATABASE
 				insertNpInDatabase(np);
 				
+				String artifactCode = HelperFunctions.getArtifactCode(np);
 				//insert head into database
 				try {
-					insertStatementsInDB(np.getHead(), HelperFunctions.getArtifactCode(np), TYPE_HEAD);
+					out.println("head");
+					insertStatementsInDB(np.getHead(), artifactCode, TYPE_HEAD);
+				}
+				catch (Exception E){
+					
+				}
+				//insert assertion into database
+				try {
+					out.println("assertion");
+					insertStatementsInDB(np.getAssertion(), artifactCode, TYPE_ASSERTION);
+				}
+				catch (Exception E){
+					
+				}
+				//insert provenance into database
+				try {
+					out.println("provenance");
+					insertStatementsInDB(np.getProvenance(), artifactCode, TYPE_PROVENANCE);
+				}
+				catch (Exception E){
+					
+				}
+				//insert pubinfo into database
+				try {
+					out.println("pubinfo");
+					insertStatementsInDB(np.getPubinfo(), artifactCode, TYPE_PUBINFO);
 				}
 				catch (Exception E){
 					
 				}
 				
 				System.out.println("\n");
+				coveredNanopubs ++;
+				
+				out.printf("nanopub: %d/%d\n", coveredNanopubs, totalNanopubs);
 			}
 
-			coveredNanopubs += nanopubsOnPage.size();
 			page += 1;
 		}
 		System.out.println("Pages done: "+ page);
@@ -108,7 +156,7 @@ public class DataExtractor {
 		
 		String getUrl = "http://localhost/nanopubs/database/api.php"
 				+ "?table=statements"
-				+ "&function=insert"
+				+ "&function=insertStatement"
 				+ "&data[]="+artifactCode
 				+ "&data[]="+hashCode
 				+ "&data[]="+URLEncoder.encode(objectStr, "UTF-8")
@@ -117,27 +165,21 @@ public class DataExtractor {
 				+ "&data[]="+type;
 				
 		DatabaseFunctions.executeGetRequest(getUrl);
-		System.out.println("statmentURL: " + getUrl);
-		//insertHashInDB(hashCode, artifactCode, type); //insert the hashcode into database
+		//System.out.println("statmentURL: " + getUrl);
 	}
 	
 	public void insertNpInDatabase(Nanopub np) throws IOException{
 		String artifactCode = HelperFunctions.getArtifactCode(np);
 		long creationTime = HelperFunctions.getTimeStamp(np);
-		try {
-			np.getCreationTime().getTimeInMillis();
-		}
-		catch (Exception E){
-			
-		}
 		long timestamp = creationTime / 1000;
 		String getUrl = "http://localhost/nanopubs/database/api.php"
 				+ "?table=nanopubs"
 				+ "&function=insertNanopub"
 				+ "&data[]="+artifactCode
 				+ "&data[]="+timestamp;
-		DatabaseFunctions.executeGetRequest(getUrl);
 		System.out.println("artifact: " + artifactCode + "\ntime: " + timestamp + "\nurl: " + getUrl);
+		
+		DatabaseFunctions.executeGetRequest(getUrl);
 	}
 	
 	
