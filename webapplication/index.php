@@ -3,7 +3,7 @@
 <title> Search for nanopublications </title>
 </head>
 <body>
-<form method="GET" action="database/api.php">
+<form method="GET" action="index.php">
 	<input type="text" name="table" value="statements"  style="display:none;" />
 	<input type="text" name="function" value="getNanopub" style="display:none;" />
 	<h1> search for nanopubs </h1>

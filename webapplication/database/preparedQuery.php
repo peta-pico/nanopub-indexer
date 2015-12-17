@@ -34,9 +34,11 @@ function mysqli_prepared_query($link,$sql,$typeDef = FALSE,$params = FALSE){
     
     $result = array(); 
     foreach($params as $queryKey => $query){ 
-      foreach($bindParams as $paramKey => $value){ 
-        $bindParams[$paramKey] = $query[$paramKey]; 
-      } 
+      if (!empty($bindParams)){
+        foreach($bindParams as $paramKey => $value){ 
+          $bindParams[$paramKey] = $query[$paramKey]; 
+        } 
+      }
       $queryResult = array(); 
       if(mysqli_stmt_execute($stmt)){ 
         $resultMetaData = mysqli_stmt_result_metadata($stmt); 

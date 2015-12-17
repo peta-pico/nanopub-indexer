@@ -75,8 +75,12 @@ if ($table == "statements"){
 			$object = $data[1];
 			$predicate = $data[2];
 			$subject = $data[3];
+			$head  = $data[4];
+			$assertion = $data[5];
+			$provenance = $data[6];
+			$pubinfo = $data[7];
 
-			$result = $statementsObj->get($hashCode, $object, $predicate, $subject);
+			$result = $statementsObj->get($hashCode, $object, $predicate, $subject, $head, $assertion, $provenance, $pubinfo);
 			print_r($result);
 		}
 

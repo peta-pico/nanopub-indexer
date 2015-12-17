@@ -12,7 +12,7 @@ class Statements {
 		require_once("preparedQuery.php");
 	}
 
-	public function get($hashCode, $object, $predicate, $subject){
+	public function get($hashCode, $object, $predicate, $subject, $head = "", $assertion = "", $provenance = "", $pubinfo = ""){
 		$query = "SELECT * FROM statements WHERE 1 = 1";
 		$types = "";
 		$params = array();
@@ -38,10 +38,22 @@ class Statements {
 			$params[] = $subject;
 		}
 
-		echo $query;
-		print_r ($params);
+		if (!empty($head) || !empty($assertion) || !empty($provenance) || !empty($pubinfo)){
+			$query .= " AND sectionID IN (";
+			if (!empty($head))
+				$query .= "1,";
+			if (!empty($assertion))
+				$query .= "2,";
+			if (!empty($provenance))
+				$query .= "3,";
+			if (!empty($pubinfo))
+				$query .= "4,";
+			$query = rtrim($query, ',');
+			$query .= ")";
+		}
+
 		$result = mysqli_prepared_query($this->_conn, $query, $types, $params);
-		return $result;
+		return json_encode($result);
 	}
 
 	public function getByHashCode($hashCode){
