@@ -12,6 +12,38 @@ class Statements {
 		require_once("preparedQuery.php");
 	}
 
+	public function get($hashCode, $object, $predicate, $subject){
+		$query = "SELECT * FROM statements WHERE 1 = 1";
+		$types = "";
+		$params = array();
+
+		if (!empty($hashCode)){
+			$query .= " AND hashCode = ?";
+			$types .= "s";
+			$params[] = $hashCode;
+		}
+		if (!empty($object)){
+			$query .= " AND object = ?";
+			$types .= "s";
+			$params[] = $object;
+		}
+		if (!empty($predicate)){
+			$query .= " AND predicate = ?";
+			$types .= "s";
+			$params[] = $predicate;
+		}
+		if (!empty($subject)){
+			$query .= " AND subject = ?";
+			$types .= "s";
+			$params[] = $subject;
+		}
+
+		echo $query;
+		print_r ($params);
+		$result = mysqli_prepared_query($this->_conn, $query, $types, $params);
+		return $result;
+	}
+
 	public function getByHashCode($hashCode){
 		$query = "SELECT * FROM statements WHERE hashCode = ?";
 		$result = mysqli_prepared_query($this->_conn, $query, "d", array($hashCode));
@@ -26,9 +58,4 @@ class Statements {
 	}
 }
 
-/*
-* nanopubURI, artifactCode, creationTime
-* Creators, Authors
-*
-*/
 ?>

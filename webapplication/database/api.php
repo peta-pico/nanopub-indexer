@@ -46,12 +46,13 @@ if ($table == "nanopubs"){
 			break;
 	}
 }
+
 if ($table == "statements"){
 	require_once("statementsModel.php");
 	$statementsObj = new statements($conn);
 
 	switch ($function) {
-		case "insert": {
+		case "insertStatement": {
 			$artifactCode = $data[0];
 			$hashCode = $data[1];
 			$object = $data[2];
@@ -63,10 +64,22 @@ if ($table == "statements"){
 			break;
 		}
 		case "getByHashCode": {
+			print_r($data);
 			$hashCode = $data[0];
 			$result = $statementsObj->getByHashCode($hashCode);
 			print_r($result);
+			break;
 		}
+		case "getNanopub": {
+			$hashCode = $data[0];
+			$object = $data[1];
+			$predicate = $data[2];
+			$subject = $data[3];
+
+			$result = $statementsObj->get($hashCode, $object, $predicate, $subject);
+			print_r($result);
+		}
+
 	}
 }
 

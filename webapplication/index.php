@@ -4,24 +4,28 @@
 </head>
 <body>
 <form method="GET" action="database/api.php">
-	Table:
-	<input type="text" name="table" value="statements"  /><br/>
-	Function:
-	<input type="text" name="function" value="getByHashCode"  />
-	<br />
-	<hr />
-	Hashcode:<input type="text" name="data[]" /><br />
-	<hr />
-	Search in 
+	<input type="text" name="table" value="statements"  style="display:none;" />
+	<input type="text" name="function" value="getNanopub" style="display:none;" />
+	<h1> search for nanopubs </h1>
 	<p>
-	Head <input type="checkbox" name="head" /><br />
-	Assertion <input type="checkbox" name="assertion" /><br />
-	Provenance <input type="checkbox" name="provenance" /><br />
-	Pubinfo <input type="checkbox" name="pubinfo" /><br />
-	
+		Hashcode:<input type="text" name="data[]" /><br />
+		Object:<input type="text" name="data[]" /><br />
+		Predicate:<input type="text" name="data[]" /><br />
+		Subject:<input type="text" name="data[]" /><br />
+	</p>
+	<hr />
+	<p>
+		<input type="checkbox" name="head" /> Head<br />
+		<input type="checkbox" name="assertion" /> Assertion<br />
+		<input type="checkbox" name="provenance" /> Provenance<br />
+		<input type="checkbox" name="pubinfo" /> Pubinfo<br />
 	</p>
 
 	<input type="submit" value="Search" />
 </form>
 </body>
 </html>
+
+<?php
+require_once("_getnanopub.php");
+?>
