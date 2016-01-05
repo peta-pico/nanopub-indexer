@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
@@ -35,6 +36,7 @@ import org.openrdf.model.Value;
 
 import java.sql.DriverManager;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class DataExtractor {
@@ -46,6 +48,14 @@ public class DataExtractor {
 	public static final int TYPE_PROVENANCE = 3;
 	public static final int TYPE_PUBINFO = 4;
 	
+	String server = "http://np.inn.ac/";
+	public static List<Nanopub> nanopubs;
+	//temporary variable
+	
+	Connection conn = null;
+	PreparedStatement stmt;
+	// store database connection
+	
 	PrintStream out;
 
 	public DataExtractor() {
@@ -53,9 +63,11 @@ public class DataExtractor {
 	}
 
 	public void run() throws IOException, RDFHandlerException {
+		dbconnect();
+
 		long startTime = System.currentTimeMillis();
 		long currentTime;
-		String server = "http://np.inn.ac/";
+		
 		System.out.println("==========");
 		System.out.println("Server: " + server + "\n");
 		
@@ -74,7 +86,6 @@ public class DataExtractor {
 				nanopubsOnPage = NanopubServerUtils.loadNanopubUriList(server, page);	
 			}
 			
-			
 			//Check if there are nanopubs on this page
 			if (nanopubsOnPage.size() == 0){
 				break; 
@@ -86,22 +97,15 @@ public class DataExtractor {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 			//Go through every nanopub from page
-			for (String nanopubId : nanopubsOnPage) {
-				
-				//retrieve nanopub
-				long tb = System.currentTimeMillis();
-				out.println(nanopubId);
-				Nanopub np = GetNanopub.get(nanopubId);
-				
-				long te = System.currentTimeMillis();
-				out.println("\t Get nanopub: " + ((te-tb) * CUR_AMOUNT_OF_NANOPUBS) / MILLISEC_TO_DAYS + " days");
+			for (Nanopub np : nanopubs) {
 				
 				//INSERT NP INTO DATABASE
-				tb = System.currentTimeMillis();
+				double tb = System.currentTimeMillis();
 				insertNpInDatabase(np);
-				te = System.currentTimeMillis();
-				out.println("\t Insert nanopub: " + ((te-tb) * CUR_AMOUNT_OF_NANOPUBS) / MILLISEC_TO_DAYS + " days");
+				double te = System.currentTimeMillis();
+				out.println("\t Insert current nanopub: " + ((te-tb) * CUR_AMOUNT_OF_NANOPUBS) / MILLISEC_TO_DAYS + " days");
 				
 				coveredNanopubs ++;
 				currentTime = System.currentTimeMillis();
@@ -112,14 +116,33 @@ public class DataExtractor {
 		}
 		System.out.println("Pages done: "+ page);
 		System.out.println("Nanopubs done: "+ coveredNanopubs);
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
+	public void dbconnect(){
+		try
+		{
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/nanopubs","root", "admin");
+			stmt = conn.prepareStatement("INSERT INTO uris VALUES(?,?)");
+			System.out.print("Database is connected !");
+		}
+		catch(Exception e)
+		{
+			System.out.print("Do not connect to DB - Error:"+e);
+		}
+	}
 	
 	//insert a set of statements into a database
 	//statements contain a object, predicate, subject and hashcode
-	public void insertStatementsInDB(Set<Statement> statements, String artifactCode, int type) throws IOException{
+	public void insertStatementsInDB(Set<Statement> statements, String artifactCode, int type) throws IOException, SQLException{
 		//go through every statement
-		List<String> URIlist = new ArrayList<String>();
+		Set<String> URIlist = new HashSet<String>();
 		for (Statement statement : statements){
 			Value object = statement.getObject();
 			URI predicate = statement.getPredicate();
@@ -133,11 +156,19 @@ public class DataExtractor {
 			URIlist.add(predicateStr);
 			URIlist.add(subjectStr);
 		}
-		
+		stmt.setString(2, artifactCode);
+
+		//insert URIlist in database
+		for (String uri : URIlist){
+			stmt.setString(1, uri);
+			stmt.executeUpdate();
+			//out.println(stmt.toString());
+		}
 	}	
 	
 	public void insertNpInDatabase(Nanopub np) throws IOException{
 		String artifactCode = HelperFunctions.getArtifactCode(np);
+		out.println("ac: " + artifactCode);
 		
 		double te,tb;
 		
@@ -146,7 +177,7 @@ public class DataExtractor {
 			tb = System.currentTimeMillis();
 			insertStatementsInDB(np.getHead(), artifactCode, TYPE_HEAD);
 			te = System.currentTimeMillis();
-			out.println("\t Head statements: " + ((te-tb) * CUR_AMOUNT_OF_NANOPUBS) / MILLISEC_TO_DAYS + " days");
+			//out.println("\t Head statements: " + ((te-tb) * CUR_AMOUNT_OF_NANOPUBS) / MILLISEC_TO_DAYS + " days");
 		}
 		catch (Exception E){
 			E.printStackTrace();
@@ -158,7 +189,7 @@ public class DataExtractor {
 			tb = System.currentTimeMillis();
 			insertStatementsInDB(np.getAssertion(), artifactCode, TYPE_ASSERTION);
 			te = System.currentTimeMillis();
-			out.println("\t Assertion statements: " + ((te-tb) * CUR_AMOUNT_OF_NANOPUBS) / MILLISEC_TO_DAYS + " days");
+			//out.println("\t Assertion statements: " + ((te-tb) * CUR_AMOUNT_OF_NANOPUBS) / MILLISEC_TO_DAYS + " days");
 		}
 		catch (Exception E){
 			
@@ -169,7 +200,7 @@ public class DataExtractor {
 			tb = System.currentTimeMillis();
 			insertStatementsInDB(np.getProvenance(), artifactCode, TYPE_PROVENANCE);
 			te = System.currentTimeMillis();
-			out.println("\t Provenance statements: " + ((te-tb) * CUR_AMOUNT_OF_NANOPUBS) / MILLISEC_TO_DAYS + " days");
+			//out.println("\t Provenance statements: " + ((te-tb) * CUR_AMOUNT_OF_NANOPUBS) / MILLISEC_TO_DAYS + " days");
 		}
 		catch (Exception E){
 			
@@ -180,7 +211,7 @@ public class DataExtractor {
 			tb = System.currentTimeMillis();
 			insertStatementsInDB(np.getPubinfo(), artifactCode, TYPE_PUBINFO);
 			te = System.currentTimeMillis();
-			out.println("\t Pubinfo statements: " + ((te-tb) * CUR_AMOUNT_OF_NANOPUBS) / MILLISEC_TO_DAYS + " days");
+			//out.println("\t Pubinfo statements: " + ((te-tb) * CUR_AMOUNT_OF_NANOPUBS) / MILLISEC_TO_DAYS + " days");
 		}
 		catch (Exception E){
 			
@@ -188,9 +219,10 @@ public class DataExtractor {
 	}
 	
 	public void getNanopubPackage(int page) throws Exception{
+		nanopubs = new ArrayList<Nanopub>();
 		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(5 * 1000).build();
 		HttpClient c = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
-		HttpGet get = new HttpGet("http://np.inn.ac/package.gz?page=" + page);
+		HttpGet get = new HttpGet(server + "package.gz?page=" + page);
 		get.setHeader("Accept", "application/x-gzip");
 		HttpResponse resp = c.execute(get);
 		InputStream in = null;
@@ -200,7 +232,7 @@ public class DataExtractor {
 			} else {
 				System.out.println("Failed. Trying uncompressed package...");
 				// This is for compability with older versions; to be removed at some point...
-				get = new HttpGet("http://np.inn.ac/package.gz?page=" + page);
+				get = new HttpGet(server + "package.gz?page=" + page);
 				get.setHeader("Accept", "application/trig");
 				resp = c.execute(get);
 				if (!wasSuccessful(resp)) {
@@ -213,7 +245,8 @@ public class DataExtractor {
 				@Override
 				public void handleNanopub(Nanopub np) {
 					try {
-						//loadNanopub(np);
+						String artifactCode = HelperFunctions.getArtifactCode(np);
+						DataExtractor.nanopubs.add(np);
 					} catch (Exception ex) {
 						throw new RuntimeException(ex);
 					}
