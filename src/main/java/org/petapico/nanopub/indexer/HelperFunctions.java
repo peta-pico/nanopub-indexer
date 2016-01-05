@@ -22,10 +22,10 @@ public final class HelperFunctions {
 			nanopubURI = np.getUri().toString();
 		}
 		catch (Exception E){
-			return "unknown";
+			return nanopubURI;
 			
 		}
-		return getArtifactCode(np.getUri().toString());
+		return getArtifactCode(nanopubURI);
 	}
 	
 	public static String getArtifactCode(String nanopubURI){
@@ -34,6 +34,7 @@ public final class HelperFunctions {
 			artifactCode = org.nanopub.extra.server.GetNanopub.getArtifactCode(nanopubURI);
 		}
 		catch (Exception e){
+			e.printStackTrace();
 			artifactCode = "unknown";
 		}
 		return artifactCode;
