@@ -1,4 +1,0 @@
-Create table: nanopubs
-Create columns: 
- - nanopubID (ai, key)
- - artifactCode = hashingcode

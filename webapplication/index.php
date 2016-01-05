@@ -4,21 +4,9 @@
 </head>
 <body>
 <form method="GET" action="index.php">
-	<input type="text" name="table" value="statements"  style="display:none;" />
-	<input type="text" name="function" value="getNanopub" style="display:none;" />
 	<h1> search for nanopubs </h1>
 	<p>
-		Hashcode:<input type="text" name="data[]" /><br />
-		Object:<input type="text" name="data[]" /><br />
-		Predicate:<input type="text" name="data[]" /><br />
-		Subject:<input type="text" name="data[]" /><br />
-	</p>
-	<hr />
-	<p>
-		<input type="checkbox" name="head" /> Head<br />
-		<input type="checkbox" name="assertion" /> Assertion<br />
-		<input type="checkbox" name="provenance" /> Provenance<br />
-		<input type="checkbox" name="pubinfo" /> Pubinfo<br />
+		URI:<input type="text" name="uri" /><br />
 	</p>
 
 	<input type="submit" value="Search" />
