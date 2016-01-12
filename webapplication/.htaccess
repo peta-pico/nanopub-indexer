@@ -1,0 +1,2 @@
+RewriteEngine On    # Turn on the rewriting engine
+RewriteRule    ^api/search/((.*)([^/])*)*?$    database/api.php?search-uri=$1    [NC,L]    # Handle requests for search-uri

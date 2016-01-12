@@ -1,24 +1,41 @@
 <?php
+error_reporting(0);
 
 require_once("connectDatabase.php");
 
 if (!$_GET){
-	error_return("No request");
+	error_return("Invalid request");
 }
 
-if (!$_GET['uri']){
-	error_return("Wrong request");
+if (!$_GET['search-uri']){
+	error_return("Invalid request");
 }
 
-$uri = $_GET['uri'];
+if ($_GET['format']){
+	$format = $_GET['format'];
+}
+else {
+	$format = "list";
+}
+
+$uri = $_GET['search-uri'];
+
 
 //GOT THROUGH ALL ERROR CHECKS
 require_once("uriModel.php");
 $uriObj = new URIs($conn);
 
 $result = $uriObj -> getArtifactCodes($uri);
-print_r($result);
 
+if ($format == "JSON" || $format == "json"){
+	print_r($result);
+}
+
+else {
+	foreach (json_decode($result, true) as $item){
+		echo $item['artifactCode'] . "<br/>";
+	}
+}
 
 function error_return($msg){
 	echo $msg;

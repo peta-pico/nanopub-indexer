@@ -87,15 +87,14 @@ public class DataExtractor {
 				coveredURIs += insertNpInDatabase(np, stmt);	
 		
 				coveredNanopubs ++;
-				currentTime = System.currentTimeMillis();
-				
-				out.printf("(%d/%d)[%d/%d]\n", coveredNanopubs, CUR_AMOUNT_OF_NANOPUBS, coveredURIs, coveredURIs/coveredNanopubs*CUR_AMOUNT_OF_NANOPUBS);
-				long estMinutes = (currentTime-startTime)/coveredNanopubs * CUR_AMOUNT_OF_NANOPUBS / MILLISEC_TO_MINUTES;
-				long estMinutesLeft = (currentTime-startTime)/coveredNanopubs * (CUR_AMOUNT_OF_NANOPUBS-coveredNanopubs) / MILLISEC_TO_MINUTES;
-				out.printf("Estimation time: %d-%d minutes (%d hours) \n", estMinutes, estMinutesLeft, estMinutes/60);
-				
 			}
-
+			
+			currentTime = System.currentTimeMillis();
+			out.printf("(%d/%d)[%d/%d]\n", coveredNanopubs, CUR_AMOUNT_OF_NANOPUBS, coveredURIs, coveredURIs/coveredNanopubs*CUR_AMOUNT_OF_NANOPUBS);
+			long estMinutes = (currentTime-startTime)/coveredNanopubs * CUR_AMOUNT_OF_NANOPUBS / MILLISEC_TO_MINUTES;
+			long estMinutesLeft = (currentTime-startTime)/coveredNanopubs * (CUR_AMOUNT_OF_NANOPUBS-coveredNanopubs) / MILLISEC_TO_MINUTES;
+			out.printf("Estimation time: %d-%d minutes (%d hours) \n", estMinutes, estMinutesLeft, estMinutes/60);
+			
 			page += 1;
 		}
 		System.out.println("Pages done: "+ page);

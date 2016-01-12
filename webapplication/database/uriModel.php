@@ -10,7 +10,7 @@ class URIs {
 	}
 
 	public function getArtifactCodes($uri){
-		$query = "SELECT artifactCode FROM uris WHERE uri = ?";
+		$query = "SELECT artifactCode FROM uris WHERE uri = ? LIMIT 1000";
 		$params = array($uri);
 		$result = mysqli_prepared_query($this->_conn, $query, "s", $params);
 		return json_encode($result);
