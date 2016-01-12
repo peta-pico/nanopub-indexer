@@ -40,9 +40,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class DataExtractor {
-	public static final int TOTAL_AMOUNT_OF_NANOPUBS = 6370131;
-	public static final int MILLISEC_TO_DAYS = 1000 * 60 * 60 * 24; 
-	public static final int MILLISEC_TO_HOURS = 1000 * 60 * 60; 
+	public static final int CUR_AMOUNT_OF_NANOPUBS = 6370131;
+	public static final int MILLISEC_TO_MINUTES = 1000 * 60;
 	
 	String server = "http://np.inn.ac/";
 	public static List<Nanopub> nanopubs;
@@ -56,12 +55,7 @@ public class DataExtractor {
 
 	public void run() throws IOException, RDFHandlerException, SQLException {
 		Connection conn = dbconnect();
-		if (conn == null){
-			System.exit(1);
-		}
-		
-		// prepare the insert query for uri's
-		PreparedStatement insertURI = conn.prepareStatement("INSERT INTO uris VALUES(?,?)");
+		PreparedStatement stmt = conn.prepareStatement("INSERT INTO uris VALUES(?,?)");
 
 		long startTime = System.currentTimeMillis();
 		long currentTime;
@@ -72,45 +66,38 @@ public class DataExtractor {
 		//initialize values
 		int page = 1;
 		int coveredNanopubs = 0;
-		int coveredURIs = 0;
+		long coveredURIs = 0;
 		
-		while (true){
+		//Loop until we encounter an empty page
+		while (true){			
 			try {
 				getNanopubPackage(page);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				continue;
 			}
 			
-			// If there are no nanopubs on this page
-			if (nanopubs.size() == 0){
+			if (nanopubs.size() == 0)
 				break;
-			}
 			
 			//Go through every nanopub from page
 			for (Nanopub np : nanopubs) {
 				
 				//INSERT NP INTO DATABASE
-				coveredURIs += insertNpInDatabase(np, insertURI);				
+				coveredURIs += insertNpInDatabase(np, stmt);	
+		
 				coveredNanopubs ++;
-				
 				currentTime = System.currentTimeMillis();
-				System.out.printf("(%d/%d)[%d/%d] done\n", coveredNanopubs, TOTAL_AMOUNT_OF_NANOPUBS, coveredURIs, coveredURIs/coveredNanopubs*TOTAL_AMOUNT_OF_NANOPUBS);
-				System.out.printf("Total time: %d hours\n", ((currentTime-startTime)/coveredNanopubs) * TOTAL_AMOUNT_OF_NANOPUBS / MILLISEC_TO_HOURS);
-				System.out.printf("Time remaining: %d hours\n\n", ((currentTime-startTime)/coveredNanopubs) * (TOTAL_AMOUNT_OF_NANOPUBS-coveredNanopubs) / MILLISEC_TO_HOURS);
+				
+				out.printf("(%d/%d)[%d/%d]\n", coveredNanopubs, CUR_AMOUNT_OF_NANOPUBS, coveredURIs, coveredURIs/coveredNanopubs*CUR_AMOUNT_OF_NANOPUBS);
+				long estMinutes = (currentTime-startTime)/coveredNanopubs * CUR_AMOUNT_OF_NANOPUBS / MILLISEC_TO_MINUTES;
+				long estMinutesLeft = (currentTime-startTime)/coveredNanopubs * (CUR_AMOUNT_OF_NANOPUBS-coveredNanopubs) / MILLISEC_TO_MINUTES;
+				out.printf("Estimation time: %d-%d minutes (%d hours) \n", estMinutes, estMinutesLeft, estMinutes/60);
+				
 			}
 
 			page += 1;
-			
-			if (page % 3 == 0)
-				conn.commit();
-			
-			if (coveredNanopubs >= 6370){
-				break;
-			}
 		}
-		
 		System.out.println("Pages done: "+ page);
 		System.out.println("Nanopubs done: "+ coveredNanopubs);
 		
@@ -122,68 +109,46 @@ public class DataExtractor {
 		}
 	}
 	
-	public Connection dbconnect(){
-		Connection conn = null;
-		try
-		{
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/nanopubs","root", "admin");
-			conn.setAutoCommit(false);//commit trasaction manually
-			System.out.printf("Database connection success\n");
-		}
-		catch(Exception e)
-		{
-			System.out.print("Do not connect to DB - Error:"+e);
-		}
-		
-		return conn;
-	}
-	
-	public int insertNpInDatabase(Nanopub np, PreparedStatement stmt) throws IOException, SQLException{
+	public int insertNpInDatabase(Nanopub np, PreparedStatement stmt) throws IOException{
 		String artifactCode = HelperFunctions.getArtifactCode(np);
-		Set<Statement> URIlist = new HashSet<Statement>();
+		int totalURIs = 0;
 		
-		//get head URI's
 		try {
-			URIlist.addAll(np.getHead());
-		}
-		catch (Exception E){
-			E.printStackTrace();
-		}
-		
-		//get assertion URI's
-		try {
-			URIlist.addAll(np.getAssertion());
-		}
-		catch (Exception E){
-			E.printStackTrace();
-		}
-
-		//get provenance URI's
-		try {
-			URIlist.addAll(np.getProvenance());
-		}
-		catch (Exception E){
-			E.printStackTrace();
-		}
-
-		//get pubinfo URI's
-		try {
-			URIlist.addAll(np.getPubinfo());
+			totalURIs += insertStatementsInDB(np.getHead(), artifactCode, stmt);
 		}
 		catch (Exception E){
 			E.printStackTrace();
 		}
 		
-		insertStatementsInDB(URIlist, artifactCode, stmt);
-		return URIlist.size();
+		//insert assertion into database
+		try {
+			totalURIs += insertStatementsInDB(np.getAssertion(), artifactCode, stmt);
+		}
+		catch (Exception E){
+			
+		}
+		//insert provenance into database
+		try {
+			totalURIs += insertStatementsInDB(np.getProvenance(), artifactCode, stmt);
+		}
+		catch (Exception E){
+			
+		}
+		//insert pubinfo into database
+		try {
+			totalURIs += insertStatementsInDB(np.getPubinfo(), artifactCode, stmt);
+		}
+		catch (Exception E){
+			
+		}
+		return totalURIs;
 	}
-	
+
 	//insert a set of statements into a database
 	//statements contain a object, predicate, subject and hashcode
-	public void insertStatementsInDB(Set<Statement> statements, String artifactCode, PreparedStatement stmt) throws IOException, SQLException{
+	public int insertStatementsInDB(Set<Statement> statements, String artifactCode, PreparedStatement stmt) throws IOException, SQLException{
+		//go through every statement
 		Set<String> URIlist = new HashSet<String>();
-		
 		for (Statement statement : statements){
 			Value object = statement.getObject();
 			URI predicate = statement.getPredicate();
@@ -197,20 +162,32 @@ public class DataExtractor {
 			URIlist.add(predicateStr);
 			URIlist.add(subjectStr);
 		}
-
 		stmt.setString(2, artifactCode);
-		
+
 		//insert URIlist in database
 		for (String uri : URIlist){
-			if (uri.length() < 512){
-				stmt.setString(1, uri);
-				stmt.addBatch();
-			}
+			stmt.setString(1, uri);
+			stmt.executeUpdate();
 		}
 		
-		stmt.executeBatch();
-	}	
+		return URIlist.size();
+	}
 	
+	
+	public Connection dbconnect(){
+		Connection conn = null;
+		try
+		{
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/nanopubs","root", "admin");
+			System.out.print("Database is connected !");
+		}
+		catch(Exception e)
+		{
+			System.out.print("Do not connect to DB - Error:"+e);
+		}
+		return conn;
+	}
 	
 	
 	public void getNanopubPackage(int page) throws Exception{
@@ -253,7 +230,6 @@ public class DataExtractor {
 			}
 		}
 	}
-	
 	
 	private boolean wasSuccessful(HttpResponse resp) {
 		int c = resp.getStatusLine().getStatusCode();
