@@ -61,7 +61,7 @@ public class DataExtractor {
 		}
 		
 		// prepare the insert query for uri's
-		PreparedStatement insertURI = conn.prepareStatement("INSERT IGNORE INTO uris VALUES(?,?)");
+		PreparedStatement insertURI = conn.prepareStatement("INSERT INTO uris VALUES(?,?)");
 
 		long startTime = System.currentTimeMillis();
 		long currentTime;
@@ -175,7 +175,6 @@ public class DataExtractor {
 			E.printStackTrace();
 		}
 		
-		stmt.setString(2, artifactCode);
 		insertStatementsInDB(URIlist, artifactCode, stmt);
 		return URIlist.size();
 	}
@@ -199,11 +198,16 @@ public class DataExtractor {
 			URIlist.add(subjectStr);
 		}
 
+		stmt.setString(2, artifactCode);
+		
 		//insert URIlist in database
 		for (String uri : URIlist){
-			stmt.setString(1, uri);
-			stmt.addBatch();
+			if (uri.length() < 512){
+				stmt.setString(1, uri);
+				stmt.addBatch();
+			}
 		}
+		
 		stmt.executeBatch();
 	}	
 	
