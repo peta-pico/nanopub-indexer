@@ -102,6 +102,13 @@ public class DataExtractor {
 			}
 
 			page += 1;
+			
+			if (page % 3 == 0)
+				conn.commit();
+			
+			if (coveredNanopubs >= 6370){
+				break;
+			}
 		}
 		
 		System.out.println("Pages done: "+ page);
@@ -121,13 +128,14 @@ public class DataExtractor {
 		{
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection("jdbc:mysql://localhost/nanopubs","root", "admin");
+			conn.setAutoCommit(false);//commit trasaction manually
 			System.out.printf("Database connection success\n");
-				
 		}
 		catch(Exception e)
 		{
 			System.out.print("Do not connect to DB - Error:"+e);
 		}
+		
 		return conn;
 	}
 	
@@ -194,8 +202,9 @@ public class DataExtractor {
 		//insert URIlist in database
 		for (String uri : URIlist){
 			stmt.setString(1, uri);
-			stmt.executeUpdate();
+			stmt.addBatch();
 		}
+		stmt.executeBatch();
 	}	
 	
 	
@@ -227,7 +236,6 @@ public class DataExtractor {
 				@Override
 				public void handleNanopub(Nanopub np) {
 					try {
-						String artifactCode = HelperFunctions.getArtifactCode(np);
 						DataExtractor.nanopubs.add(np);
 					} catch (Exception ex) {
 						throw new RuntimeException(ex);
