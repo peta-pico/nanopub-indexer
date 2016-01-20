@@ -43,6 +43,11 @@ public class DataExtractor {
 	public static final int CUR_AMOUNT_OF_NANOPUBS = 6370131;
 	public static final int MILLISEC_TO_MINUTES = 1000 * 60;
 	
+	public static final int SECTION_HEAD = 1;
+	public static final int SECTION_ASSERTION = 2;
+	public static final int SECTION_PROVENANCE = 3;
+	public static final int SECTION_PUBINFO = 4;
+	
 	String server = "http://np.inn.ac/";
 	public static List<Nanopub> nanopubs;
 	//temporary variable
@@ -55,7 +60,7 @@ public class DataExtractor {
 
 	public void run() throws IOException, RDFHandlerException, SQLException {
 		Connection conn = dbconnect();
-		PreparedStatement stmt = conn.prepareStatement("INSERT INTO uris VALUES(?,?)");
+		PreparedStatement stmt = conn.prepareStatement("INSERT INTO uris VALUES(?,?,?)");
 
 		long startTime = System.currentTimeMillis();
 		long currentTime;
@@ -113,7 +118,7 @@ public class DataExtractor {
 		int totalURIs = 0;
 		
 		try {
-			totalURIs += insertStatementsInDB(np.getHead(), artifactCode, stmt);
+			//totalURIs += insertStatementsInDB(np.getHead(), artifactCode, stmt, SECTION_HEAD);
 		}
 		catch (Exception E){
 			E.printStackTrace();
@@ -121,21 +126,21 @@ public class DataExtractor {
 		
 		//insert assertion into database
 		try {
-			totalURIs += insertStatementsInDB(np.getAssertion(), artifactCode, stmt);
+			totalURIs += insertStatementsInDB(np.getAssertion(), artifactCode, stmt, SECTION_ASSERTION);
 		}
 		catch (Exception E){
 			
 		}
 		//insert provenance into database
 		try {
-			totalURIs += insertStatementsInDB(np.getProvenance(), artifactCode, stmt);
+			totalURIs += insertStatementsInDB(np.getProvenance(), artifactCode, stmt, SECTION_PROVENANCE);
 		}
 		catch (Exception E){
 			
 		}
 		//insert pubinfo into database
 		try {
-			totalURIs += insertStatementsInDB(np.getPubinfo(), artifactCode, stmt);
+			totalURIs += insertStatementsInDB(np.getPubinfo(), artifactCode, stmt, SECTION_PUBINFO);
 		}
 		catch (Exception E){
 			
@@ -145,7 +150,7 @@ public class DataExtractor {
 
 	//insert a set of statements into a database
 	//statements contain a object, predicate, subject and hashcode
-	public int insertStatementsInDB(Set<Statement> statements, String artifactCode, PreparedStatement stmt) throws IOException, SQLException{
+	public int insertStatementsInDB(Set<Statement> statements, String artifactCode, PreparedStatement stmt, int section) throws IOException, SQLException{
 		//go through every statement
 		Set<String> URIlist = new HashSet<String>();
 		for (Statement statement : statements){
@@ -162,6 +167,7 @@ public class DataExtractor {
 			URIlist.add(subjectStr);
 		}
 		stmt.setString(2, artifactCode);
+		stmt.setInt(3, section);
 
 		//insert URIlist in database
 		for (String uri : URIlist){
