@@ -58,8 +58,8 @@ public class DataExtractor {
 		out = new PrintStream(System.out);
 	}
 
-	public void run() throws IOException, RDFHandlerException, SQLException {
-		Connection conn = dbconnect();
+	public void run(String dbuser, String dbpass) throws IOException, RDFHandlerException, SQLException {
+		Connection conn = dbconnect(dbuser, dbpass);
 		PreparedStatement stmt = conn.prepareStatement("INSERT INTO uris VALUES(?,?,?)");
 
 		long startTime = System.currentTimeMillis();
@@ -179,12 +179,12 @@ public class DataExtractor {
 	}
 	
 	
-	public Connection dbconnect(){
+	public Connection dbconnect(String dbuser, String dbpass){
 		Connection conn = null;
 		try
 		{
 			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/nanopubs","root", "admin");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/nanopubs",dbuser, dbpass);
 			System.out.print("Database is connected !");
 		}
 		catch(Exception e)
@@ -242,8 +242,12 @@ public class DataExtractor {
 	}
 
 	public static void main(String[] args) throws IOException, RDFHandlerException, SQLException {
+		if (args.length != 2){
+			System.out.printf("Invalid arguments expected: dbusername, dbpassword\n");
+			System.exit(1);
+		}
 		DataExtractor dataExtractor = new DataExtractor();
-		dataExtractor.run();
+		dataExtractor.run(args[0], args[1]);
 	}
 
 
