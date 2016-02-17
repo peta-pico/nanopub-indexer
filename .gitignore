@@ -8,3 +8,4 @@
 /classpath.txt
 *.log
 local.*
+/webapplication/database/connectDatabase.php

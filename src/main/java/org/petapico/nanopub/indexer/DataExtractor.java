@@ -3,10 +3,10 @@ package org.petapico.nanopub.indexer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
+//import java.net.HttpURLConnection;
+//import java.net.MalformedURLException;
+//import java.net.URL;
+//import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -114,7 +114,7 @@ public class DataExtractor {
 	}
 	
 	public int insertNpInDatabase(Nanopub np, PreparedStatement stmt) throws IOException{
-		String artifactCode = HelperFunctions.getArtifactCode(np);
+		String artifactCode = np.getUri().toString(); //HelperFunctions.getArtifactCode(np);
 		int totalURIs = 0;
 		
 		try {
