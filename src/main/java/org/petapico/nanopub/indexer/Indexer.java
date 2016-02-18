@@ -45,7 +45,8 @@ public class Indexer {
 		indexer.run();
 	}
 
-	public Indexer() {
+	public Indexer() throws ClassNotFoundException, SQLException {
+		db = new NanopubDatabase("root", "admin");
 	}
 
 	public void run() throws IOException, RDFHandlerException, Exception {
@@ -61,23 +62,32 @@ public class Indexer {
 			long peerNanopubNo = si.getNextNanopubNo(); //number of np's stored on the server
 			long peerJid = si.getJournalId(); //journal identifier of the server
 			
+			System.out.printf("Info:\n %d peerpagesize\n %d peernanopubno\n %d peerjid\n\n", peerPageSize, peerNanopubNo, peerJid);
+
 			//retrieve stored server information
 			long dbNanopubNo = db.getNextNanopubNo(serverName); //number of np's stored according to db
 			long dbJid = db.getJournalId(serverName); //journal identifier according to db
-
+			
+			System.out.printf("Db:\n %d dbnanopubno\n %d dbjid\n", dbNanopubNo, dbJid);
+			System.out.println("==========\n");
+			
 			if (dbJid != peerJid){
 				dbNanopubNo = 0;
 			}
 			
 			long currentNanopub = dbNanopubNo;
-			while (currentNanopub < peerNanopubNo){
-				int page = (int) (currentNanopub / peerPageSize);
-				int addedNanopubs= insertNanopubsFromPage(page, serverName);
-				if (addedNanopubs == -1) break; //something must have gone wrong
-				currentNanopub += addedNanopubs;
+			try {
+				while (currentNanopub < peerNanopubNo){
+					int page = (int) (currentNanopub / peerPageSize) + 1;
+					int addedNanopubs= insertNanopubsFromPage(page, serverName);
+					if (addedNanopubs == -1) break; //something must have gone wrong
+					currentNanopub += addedNanopubs;
+				}
 			}
-			db.updateJournalId(peerJid);
-			db.updateNextNanopubNo(currentNanopub);
+			finally {
+				db.updateJournalId(serverName, peerJid);
+				db.updateNextNanopubNo(serverName, currentNanopub);
+			}
 		}
 	}
 	
@@ -87,16 +97,21 @@ public class Indexer {
 		if (nanopubs.size() == 0) {return -1;} //this is no good..
 
 		for (Nanopub np : nanopubs) {
-			
-			//INSERT NP INTO DATABASE
-			insertNpInDatabase(np);	
+			String artifactCode = np.getUri().toString();
+			if (!db.npInserted(artifactCode)){
+				//INSERT NP INTO DATABASE
+				insertNpInDatabase(np, artifactCode);	
+			}
+			else {
+				System.out.printf("skip: %s\n", artifactCode);
+			}
 			coveredNanopubs ++;
 		}
 		return coveredNanopubs;
 	}
 	
-	public int insertNpInDatabase(Nanopub np) throws IOException, SQLException{
-		String artifactCode = np.getUri().toString();
+	public int insertNpInDatabase(Nanopub np, String artifactCode) throws IOException, SQLException{
+		db.insertNp(artifactCode);
 		int totalURIs = 0;
 		
 		//totalURIs += insertStatementsInDB(np.getHead(), artifactCode, stmt, SECTION_HEAD);
@@ -127,8 +142,13 @@ public class Indexer {
 
 		//insert URIlist in database
 		for (String uri : URIlist){
-			db.setUriInsertPs(uri);
-			db.runInsertPs();
+			if (uri.length() < 760){
+				db.setUriInsertPs(uri);
+				db.runInsertPs();
+			}
+			else {
+				System.out.printf("URI to big: %s\n", uri);
+			}
 		}
 		
 		return URIlist.size();
@@ -138,7 +158,8 @@ public class Indexer {
 		nanopubs = new ArrayList<Nanopub>();
 		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(5 * 1000).build();
 		HttpClient c = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
-		HttpGet get = new HttpGet(server + "package.gz?page=" + page);
+		String nanopubPackage = server + "package.gz?page=" + page;
+		HttpGet get = new HttpGet(nanopubPackage);
 		get.setHeader("Accept", "application/x-gzip");
 		HttpResponse resp = c.execute(get);
 		InputStream in = null;
@@ -161,7 +182,7 @@ public class Indexer {
 				@Override
 				public void handleNanopub(Nanopub np) {
 					try {
-						DataExtractor.nanopubs.add(np);
+						Indexer.nanopubs.add(np);
 					} catch (Exception ex) {
 						throw new RuntimeException(ex);
 					}
