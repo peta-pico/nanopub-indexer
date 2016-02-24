@@ -41,12 +41,16 @@ public class Indexer {
 	public static List<Nanopub> nanopubs; //used by the callback function of the MultiNanopubRdfHandler class -> can we do this better?
 	
 	public static void main(String[] args) throws IOException, RDFHandlerException, Exception {
-		Indexer indexer = new Indexer();
+		if (args.length != 2){
+			System.out.printf("Invalid arguments expected: dbusername, dbpassword\n");
+			System.exit(1);
+		}
+		Indexer indexer = new Indexer(args[0], args[1]);
 		indexer.run();
 	}
 
-	public Indexer() throws ClassNotFoundException, SQLException {
-		db = new NanopubDatabase("root", "admin");
+	public Indexer(String dbusername, String dbpassword) throws ClassNotFoundException, SQLException {
+		db = new NanopubDatabase(dbusername, dbpassword);
 	}
 
 	public void run() throws IOException, RDFHandlerException, Exception {
@@ -147,7 +151,7 @@ public class Indexer {
 				db.runInsertPs();
 			}
 			else {
-				System.out.printf("URI to big: %s\n", uri);
+				System.out.printf("URI to big: %s in %s\n", uri, artifactCode);
 			}
 		}
 		
