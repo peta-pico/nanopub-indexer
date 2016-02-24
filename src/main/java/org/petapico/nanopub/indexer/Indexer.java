@@ -86,11 +86,15 @@ public class Indexer {
 					int addedNanopubs= insertNanopubsFromPage(page, serverName);
 					if (addedNanopubs == -1) break; //something must have gone wrong
 					currentNanopub += addedNanopubs;
+					db.updateJournalId(serverName, peerJid);
+					db.updateNextNanopubNo(serverName, currentNanopub);
 				}
 			}
 			finally {
+				/*
 				db.updateJournalId(serverName, peerJid);
 				db.updateNextNanopubNo(serverName, currentNanopub);
+				*/
 			}
 		}
 	}
