@@ -14,7 +14,7 @@ public class NanopubDatabase {
 	public NanopubDatabase (String dbuser, String dbpass) throws SQLException, ClassNotFoundException{
 		Class.forName("com.mysql.jdbc.Driver");
 		conn = DriverManager.getConnection("jdbc:mysql://localhost/nanopubs",dbuser, dbpass);
-		insertStmt = conn.prepareStatement("INSERT INTO uris VALUES(?,?,?)");
+		insertStmt = conn.prepareStatement("INSERT IGNORE INTO uris VALUES(?,?,?)");
 	}
 	
 	private boolean insertServer(String serverName){
@@ -48,7 +48,7 @@ public class NanopubDatabase {
 	}
 	
 	public void insertNp(String artifactCode) throws SQLException{
-		String query = "INSERT INTO nanopubs VALUES (?)";
+		String query = "INSERT IGNORE INTO nanopubs VALUES (?)";
 		PreparedStatement stmt = conn.prepareStatement(query);
 		stmt.setString(1, artifactCode);
 		stmt.executeUpdate();
@@ -85,7 +85,9 @@ public class NanopubDatabase {
 		PreparedStatement stmt = conn.prepareStatement(query);
 		stmt.setLong(1, Jid);
 		stmt.setString(2, serverName);
-		System.out.printf("%s %d %s\n", query, Jid, serverName);
+		//String rs = stmt.toString();
+		//System.out.printf("%s %d %s\n", query, Jid, serverName);
+		//System.out.printf("%s\n", rs);
 		stmt.executeUpdate();
 	}
 	
@@ -94,7 +96,9 @@ public class NanopubDatabase {
 		PreparedStatement stmt = conn.prepareStatement(query);
 		stmt.setLong(1, NextNanopubNo);
 		stmt.setString(2, serverName);
-		System.out.printf("%s %d %s\n", query, NextNanopubNo, serverName);
+		//String rs = stmt.toString();
+		//System.out.printf("%s %d %s\n", query, NextNanopubNo, serverName);
+		//System.out.printf("%s\n", rs);
 		stmt.executeUpdate();
 	}
 	

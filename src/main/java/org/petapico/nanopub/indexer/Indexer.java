@@ -37,10 +37,14 @@ public class Indexer {
 	public static final int SECTION_PUBINFO = 4;
 
 	NanopubDatabase db = null;
+	int URItoobig;
 	
 	public static List<Nanopub> nanopubs; //used by the callback function of the MultiNanopubRdfHandler class -> can we do this better?
 	
 	public static void main(String[] args) throws IOException, RDFHandlerException, Exception {
+		//args = new String[2];
+		//args[0] = "root";
+		//args[1] = "admin";
 		if (args.length != 2){
 			System.out.printf("Invalid arguments expected: dbusername, dbpassword\n");
 			System.exit(1);
@@ -51,6 +55,7 @@ public class Indexer {
 
 	public Indexer(String dbusername, String dbpassword) throws ClassNotFoundException, SQLException {
 		db = new NanopubDatabase(dbusername, dbpassword);
+		URItoobig = 0;
 	}
 
 	public void run() throws IOException, RDFHandlerException, Exception {
@@ -80,14 +85,17 @@ public class Indexer {
 			}
 			
 			long currentNanopub = dbNanopubNo;
+			System.out.printf("Starting from: %d\n", currentNanopub);
+			
 			try {
 				while (currentNanopub < peerNanopubNo){
 					int page = (int) (currentNanopub / peerPageSize) + 1;
-					int addedNanopubs= insertNanopubsFromPage(page, serverName);
-					if (addedNanopubs == -1) break; //something must have gone wrong
+					int addedNanopubs = insertNanopubsFromPage(page, serverName);
+					if (addedNanopubs < peerPageSize) {System.out.printf("weird break\n"); break;} //something must have gone wrong
 					currentNanopub += addedNanopubs;
 					db.updateJournalId(serverName, peerJid);
 					db.updateNextNanopubNo(serverName, currentNanopub);
+					System.out.printf("URI to big on page %d: %d\n", page, URItoobig);
 				}
 			}
 			finally {
@@ -106,13 +114,12 @@ public class Indexer {
 
 		for (Nanopub np : nanopubs) {
 			String artifactCode = np.getUri().toString();
-			if (!db.npInserted(artifactCode)){
-				//INSERT NP INTO DATABASE
+			//if (!db.npInserted(artifactCode)){
 				insertNpInDatabase(np, artifactCode);	
-			}
-			else {
-				System.out.printf("skip: %s\n", artifactCode);
-			}
+			//}
+			//else {
+				//System.out.printf("skip: %s\n", artifactCode);
+			//}
 			coveredNanopubs ++;
 		}
 		return coveredNanopubs;
@@ -155,7 +162,8 @@ public class Indexer {
 				db.runInsertPs();
 			}
 			else {
-				System.out.printf("URI to big: %s in %s\n", uri, artifactCode);
+				URItoobig++;
+				//System.out.printf("URI to big: %s in %s\n", uri, artifactCode);
 			}
 		}
 		
