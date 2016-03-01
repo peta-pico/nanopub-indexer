@@ -161,6 +161,7 @@ public class Indexer {
 			URIlist.add(predicateStr);
 			URIlist.add(subjectStr);
 		}
+		log("inserting uri's in db");
 		db.setArtifactCodeInsertPs(artifactCode);
 		db.setSectionInsertPs(sectionID);
 
