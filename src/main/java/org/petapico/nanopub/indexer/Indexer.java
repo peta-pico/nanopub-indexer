@@ -38,6 +38,7 @@ public class Indexer {
 
 	NanopubDatabase db = null;
 	int URItoobig;
+	boolean printlog;
 	
 	public static List<Nanopub> nanopubs; //used by the callback function of the MultiNanopubRdfHandler class -> can we do this better?
 	
@@ -45,17 +46,22 @@ public class Indexer {
 		//args = new String[2];
 		//args[0] = "root";
 		//args[1] = "admin";
-		if (args.length != 2){
+		boolean printlog = false;
+		if (args.length < 2){
 			System.out.printf("Invalid arguments expected: dbusername, dbpassword\n");
 			System.exit(1);
 		}
-		Indexer indexer = new Indexer(args[0], args[1]);
+		if (args.length == 3){
+			printlog = true;
+		}
+		Indexer indexer = new Indexer(args[0], args[1], printlog);
 		indexer.run();
 	}
 
-	public Indexer(String dbusername, String dbpassword) throws ClassNotFoundException, SQLException {
+	public Indexer(String dbusername, String dbpassword, boolean printlog) throws ClassNotFoundException, SQLException {
 		db = new NanopubDatabase(dbusername, dbpassword);
 		URItoobig = 0;
+		this.printlog = printlog;
 	}
 
 	public void run() throws IOException, RDFHandlerException, Exception {
@@ -114,6 +120,7 @@ public class Indexer {
 
 		for (Nanopub np : nanopubs) {
 			String artifactCode = np.getUri().toString();
+			log("inserting: " + artifactCode);
 			//if (!db.npInserted(artifactCode)){
 				insertNpInDatabase(np, artifactCode);	
 			//}
@@ -131,9 +138,11 @@ public class Indexer {
 		
 		//totalURIs += insertStatementsInDB(np.getHead(), artifactCode, stmt, SECTION_HEAD);
 		totalURIs += insertStatementsInDB(np.getAssertion(), artifactCode, SECTION_ASSERTION);
+		log("done assertion");
 		totalURIs += insertStatementsInDB(np.getProvenance(), artifactCode, SECTION_PROVENANCE);
+		log("done provenance");
 		totalURIs += insertStatementsInDB(np.getPubinfo(), artifactCode, SECTION_PUBINFO);
-		
+		log("done pubinfo");
 		return totalURIs;
 	}
 	
@@ -163,7 +172,6 @@ public class Indexer {
 			}
 			else {
 				URItoobig++;
-				//System.out.printf("URI to big: %s in %s\n", uri, artifactCode);
 			}
 		}
 		
@@ -206,9 +214,15 @@ public class Indexer {
 			});
 		} finally {
 			if (in != null){
-				System.out.println(in.toString());
+				//System.out.println(in.toString());
 				in.close();
 			}
+		}
+	}
+	
+	public void log(String msg){
+		if (printlog){
+			System.out.printf("%s\n", msg);
 		}
 	}
 	
