@@ -41,12 +41,12 @@ public class Indexer {
 	public static List<Nanopub> nanopubs; //used by the callback function of the MultiNanopubRdfHandler class -> can we do this better?
 	
 	public static void main(String[] args) {
-		boolean printlog = false;
-		
+		/*
 		args = new String[3];
 		args[0] = "root";
 		args[1] = "admin";
 		args[2] = "true";
+		*/
 		
 		if (args.length < 2){
 			System.out.printf("Invalid arguments expected: dbusername, dbpassword\n");
@@ -196,6 +196,7 @@ public class Indexer {
 		else {
 			stmt = db.getInsertStmt();
 		}
+		
 		stmt.setString(2, artifactCode);
 		stmt.setInt(3, sectionID);
 
