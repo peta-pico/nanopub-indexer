@@ -11,12 +11,19 @@ public class NanopubDatabase {
 	private Connection conn;
 	PreparedStatement insertStmt;
 	PreparedStatement insertIgnoreStmt;
+	PreparedStatement selectNpStmt;
+	PreparedStatement updateNpStmt;
+	PreparedStatement insertNpStmt;
 	
 	public NanopubDatabase (String dbuser, String dbpass) throws SQLException, ClassNotFoundException{
 		Class.forName("com.mysql.jdbc.Driver");
 		conn = DriverManager.getConnection("jdbc:mysql://localhost/nanopubs",dbuser, dbpass);
 		insertStmt = conn.prepareStatement("INSERT INTO uris VALUES(?,?,?)");
 		insertIgnoreStmt = conn.prepareStatement("INSERT IGNORE INTO uris VALUES(?,?,?)");
+		
+		selectNpStmt = conn.prepareStatement("SELECT finished FROM nanopubs WHERE artifactCode = ?");
+		updateNpStmt = conn.prepareStatement("UPDATE nanopubs SET finished = 1 WHERE artifactCode = ?");
+		insertNpStmt = conn.prepareStatement("INSERT INTO nanopubs VALUES (?, 0)");
 	}
 	
 	private boolean insertServer(String serverName){
@@ -50,21 +57,23 @@ public class NanopubDatabase {
 	}
 	
 	public void insertNp(String artifactCode) throws SQLException{
-		String query = "INSERT INTO nanopubs VALUES (?)";
-		PreparedStatement stmt = conn.prepareStatement(query);
-		stmt.setString(1, artifactCode);
-		stmt.executeUpdate();
+		insertNpStmt.setString(1, artifactCode);
+		insertNpStmt.executeUpdate();
 	}
 	
-	public boolean npInserted(String artifactCode) throws SQLException{
-		String query = "SELECT 1 FROM nanopubs WHERE artifactCode = ?";
-		PreparedStatement stmt = conn.prepareStatement(query);
-		stmt.setString(1, artifactCode);
-		ResultSet rs = stmt.executeQuery();
+	public void updateNpFinished(String artifactCode) throws SQLException {
+		updateNpStmt.setString(1, artifactCode);
+		updateNpStmt.executeUpdate();
+	}
+	
+	public int npInserted(String artifactCode) throws SQLException{
+		selectNpStmt.setString(1, artifactCode);
+		ResultSet rs = selectNpStmt.executeQuery();
 		if (rs.next()){
-			return true;
+			return rs.getInt("finished");
+			
 		}
-		return false;
+		return -1;
 	}
 	
 	public long getJournalId(String serverName) throws SQLException{

@@ -113,7 +113,7 @@ public class Indexer {
 						break;
 					}
 					System.out.println("page: " + page);
-					if (page == 10) break;
+					if (page >= 10) break;
 					
 				}
 			}
@@ -123,10 +123,10 @@ public class Indexer {
 			}
 			finally {
 				System.out.println( "Updating database ") ;
-				db.updateNextNanopubNo(serverName, currentNanopub);
+				//db.updateNextNanopubNo(serverName, currentNanopub);
 			}
 			long end = System.currentTimeMillis();
-			System.out.printf("performance: %d seconds\n", (end-start)/(1000));
+			System.out.printf("performance estimate: %d hours\n", ((end-start) * 637)/(1000 * 60 * 24));
 		}
 	}
 	
@@ -140,10 +140,11 @@ public class Indexer {
 
 		for (Nanopub np : nanopubs) {
 			String artifactCode = np.getUri().toString();
-			if (!db.npInserted(artifactCode)){
+			int insertStatus = db.npInserted(artifactCode);
+			if (insertStatus == -1){		// not inserted
 				insertNpInDatabase(np, artifactCode, false);	
 			}
-			else {
+			else if (insertStatus == 0){	// started but not finished
 				//System.out.printf("ignore insert: %s\n", artifactCode);
 				insertNpInDatabase(np, artifactCode, true);
 			}
@@ -156,12 +157,13 @@ public class Indexer {
 		int totalURIs = 0;
 		
 		if (!ignore){
-			db.insertNp(artifactCode); //Busy with this nanopub (not finished maybe?)
+			db.insertNp(artifactCode);
 		}
 		//totalURIs += insertStatementsInDB(np.getHead(), artifactCode, stmt, SECTION_HEAD);
 		totalURIs += insertStatementsInDB(np.getAssertion(), artifactCode, SECTION_ASSERTION, ignore);
 		totalURIs += insertStatementsInDB(np.getProvenance(), artifactCode, SECTION_PROVENANCE, ignore);
 		totalURIs += insertStatementsInDB(np.getPubinfo(), artifactCode, SECTION_PUBINFO, ignore);
+		db.updateNpFinished(artifactCode);
 		
 		return totalURIs;
 	}
