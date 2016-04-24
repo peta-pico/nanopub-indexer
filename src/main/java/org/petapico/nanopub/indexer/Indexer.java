@@ -121,7 +121,7 @@ public class Indexer {
 			}
 			finally {
 				System.out.println( "Updating database ") ;
-				//db.updateNextNanopubNo(serverName, currentNanopub);
+				db.updateNextNanopubNo(serverName, currentNanopub);
 			}
 			long end = System.currentTimeMillis();
 			System.out.printf("performance estimate: %d hours\n", ((end-start) * 637)/(1000 * 60 * 24));
