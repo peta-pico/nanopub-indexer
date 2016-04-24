@@ -10,11 +10,13 @@ public class NanopubDatabase {
 
 	private Connection conn;
 	PreparedStatement insertStmt;
+	PreparedStatement insertIgnoreStmt;
 	
 	public NanopubDatabase (String dbuser, String dbpass) throws SQLException, ClassNotFoundException{
 		Class.forName("com.mysql.jdbc.Driver");
 		conn = DriverManager.getConnection("jdbc:mysql://localhost/nanopubs",dbuser, dbpass);
-		insertStmt = conn.prepareStatement("INSERT IGNORE INTO uris VALUES(?,?,?)");
+		insertStmt = conn.prepareStatement("INSERT INTO uris VALUES(?,?,?)");
+		insertIgnoreStmt = conn.prepareStatement("INSERT IGNORE INTO uris VALUES(?,?,?)");
 	}
 	
 	private boolean insertServer(String serverName){
@@ -48,7 +50,7 @@ public class NanopubDatabase {
 	}
 	
 	public void insertNp(String artifactCode) throws SQLException{
-		String query = "INSERT IGNORE INTO nanopubs VALUES (?)";
+		String query = "INSERT INTO nanopubs VALUES (?)";
 		PreparedStatement stmt = conn.prepareStatement(query);
 		stmt.setString(1, artifactCode);
 		stmt.executeUpdate();
@@ -140,5 +142,13 @@ public class NanopubDatabase {
 			return false;
 		}
 		return true;
+	}
+	
+	public PreparedStatement getInsertIgnoreStmt(){
+		return insertIgnoreStmt;
+	}
+	
+	public PreparedStatement getInsertStmt(){
+		return insertStmt;
 	}
 }
