@@ -94,7 +94,7 @@ public class Indexer {
 			System.out.println("==========\n");
 			
 			//Start from the beginning
-			if (dbJid != peerJid && 1==1) {
+			if (dbJid != peerJid) {
 				dbNanopubNo = 0; 
 				db.updateJournalId(serverName, peerJid);
 			}
@@ -113,8 +113,6 @@ public class Indexer {
 						break;
 					}
 					System.out.println("page: " + page);
-					if (page >= 10) break;
-					
 				}
 			}
 			catch (Exception E){
