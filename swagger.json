@@ -1,0 +1,105 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Nanopub API",
+        "description": "Build applications on top of the nanopub database",
+        "version": "1.0.0"
+    },
+    "host": "petapico.d2s.labs.vu.nl",
+    "schemes": [
+        "http"
+    ],
+    "basePath": "/api",
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/database/api.php": {
+            "get": {
+                "summary": "Searches the database on the given conditions for nanopubs",
+                "description": "The Products endpoint returns the nanopubs that fit the conditions",
+                "parameters": [
+                    {
+                        "name": "search-uri",
+                        "in": "query",
+                        "description": "The URI you are looking for",
+                        "required": true,
+                        "type": "String"
+                    },
+                    {
+                        "name": "head",
+                        "in": "query",
+                        "description": "Search for URI in the head",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "assertion",
+                        "in": "query",
+                        "description": "Search for URI in the assertion",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "pubinfo",
+                        "in": "query",
+                        "description": "Search for URI in the pubinfo",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "format",
+                        "in": "query",
+                        "description": "Specify the return format (default JSON)",
+                        "required": false,
+                        "type": "String",
+                        "format": [
+                            "text",
+                            "JSON"
+                        ]
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The nanopubs that fit the conditions (txt format)",
+                        "schema": {
+                            "$ref": "#/definitions/Nanopub"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "JSON": {
+                        "description": "JSON formatted output",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Nanopub"
+                            },
+                            "description": "Output as an array"
+                        }
+                    },
+                    "txt": {
+                        "description": "txt formatted output (newline seperator)",
+                        "schema": {
+                            "$ref": "#/definitions/Nanopub"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Nanopub": {
+            "type": "string",
+            "description": "The artifact code of the nanopub."
+        },
+        "Error": {
+            "type": "string",
+            "description": "The error message"
+        }
+    }
+}

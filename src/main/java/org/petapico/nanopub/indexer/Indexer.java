@@ -60,7 +60,7 @@ public class Indexer {
 			}
 			catch (Exception E){
 				System.out.println("Run error");
-				System.out.println(E.toString());
+				System.out.println(E.getMessage());
 			}
 			// sleep ?
 		}
@@ -102,7 +102,7 @@ public class Indexer {
 			long currentNanopub = dbNanopubNo;
 			System.out.printf("Starting from: %d\n", currentNanopub);
 			
-			//long start = System.currentTimeMillis();
+			long start = System.currentTimeMillis();
 			try {
 				while (currentNanopub < peerNanopubNo){
 					int page = (int) (currentNanopub / peerPageSize) + 1; 	// compute the starting page
@@ -123,8 +123,8 @@ public class Indexer {
 				System.out.println( "Updating database ") ;
 				db.updateNextNanopubNo(serverName, currentNanopub);
 			}
-			//long end = System.currentTimeMillis();
-			//System.out.printf("performance estimate: %d hours\n", ((end-start) * 637)/(1000 * 60 * 24));
+			long end = System.currentTimeMillis();
+			System.out.printf("performance estimate: %d hours\n", ((end-start))/(1000 * 60 * 24));
 		}
 	}
 	
