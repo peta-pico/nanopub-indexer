@@ -41,12 +41,12 @@ public class Indexer {
 	public static List<Nanopub> nanopubs; //used by the callback function of the MultiNanopubRdfHandler class -> can we do this better?
 	
 	public static void main(String[] args) {
-		/*
+		
 		args = new String[3];
 		args[0] = "root";
 		args[1] = "admin";
 		args[2] = "true";
-		*/
+		
 		
 		if (args.length < 2){
 			System.out.printf("Invalid arguments expected: dbusername, dbpassword\n");
@@ -105,8 +105,27 @@ public class Indexer {
 			long start = System.currentTimeMillis();
 			try {
 				while (currentNanopub < peerNanopubNo){
+					int addedNanopubs = 0;
 					int page = (int) (currentNanopub / peerPageSize) + 1; 	// compute the starting page
-					int addedNanopubs = insertNanopubsFromPage(page, serverName); // add all nanopubs from page
+
+					if ((peerNanopubNo - currentNanopub) < peerPageSize) {
+						System.out.println("last bits");
+						List<String> nanopubsOnPage = NanopubServerUtils.loadNanopubUriList(si, page);
+						for (String artifactCode : nanopubsOnPage) {
+							Nanopub np = GetNanopub.get(artifactCode);							
+							int insertStatus = db.npInserted(artifactCode);
+							if (insertStatus == -1){		// not inserted
+								insertNpInDatabase(np, artifactCode, false);	
+							}
+							else if (insertStatus == 0){	// started but not finished
+								insertNpInDatabase(np, artifactCode, true);
+							}
+							addedNanopubs ++;
+						}
+					}
+					else {
+						addedNanopubs = insertNanopubsFromPage(page, serverName); // add all nanopubs from page
+					}
 					currentNanopub += addedNanopubs;
 					if (addedNanopubs < peerPageSize && currentNanopub < peerNanopubNo) {
 						System.out.println("ERROR  not enough nanopubs found on page: " + page); 
