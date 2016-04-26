@@ -109,7 +109,6 @@ public class Indexer {
 					int addedNanopubs = 0;
 					int page = (int) (currentNanopub / peerPageSize) + 1; 	// compute the starting page
 
-					System.out.printf("comp: %d-%d < %d\n", peerNanopubNo, currentNanopub, peerPageSize);
 					if ((peerNanopubNo - currentNanopub) < peerPageSize) {
 						System.out.println("last bits");
 						List<String> nanopubsOnPage = NanopubServerUtils.loadNanopubUriList(si, page);

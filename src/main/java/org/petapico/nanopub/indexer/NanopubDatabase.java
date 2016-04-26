@@ -107,9 +107,9 @@ public class NanopubDatabase {
 		PreparedStatement stmt = conn.prepareStatement(query);
 		stmt.setLong(1, NextNanopubNo);
 		stmt.setString(2, serverName);
-		String rs = stmt.toString();
-		System.out.printf("%s %d %s\n", query, NextNanopubNo, serverName);
-		System.out.printf("%s\n", rs);
+		//String rs = stmt.toString();
+		//System.out.printf("%s %d %s\n", query, NextNanopubNo, serverName);
+		//System.out.printf("%s\n", rs);
 		stmt.executeUpdate();
 	}
 	
