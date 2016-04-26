@@ -102,7 +102,7 @@ public class Indexer {
 			long currentNanopub = dbNanopubNo;
 			System.out.printf("Starting from: %d\n", currentNanopub);
 			
-			long start = System.currentTimeMillis();
+			//long start = System.currentTimeMillis();
 			try {
 				while (currentNanopub < peerNanopubNo){
 					int page = (int) (currentNanopub / peerPageSize) + 1; 	// compute the starting page
@@ -112,7 +112,7 @@ public class Indexer {
 						System.out.println("ERROR  not enough nanopubs found on page: " + page); 
 						break;
 					}
-					System.out.println("page: " + page);
+					System.out.printf("page: %d (%d/%d)\n",page, currentNanopub, peerNanopubNo);
 				}
 			}
 			catch (Exception E){
@@ -123,8 +123,8 @@ public class Indexer {
 				System.out.println( "Updating database ") ;
 				db.updateNextNanopubNo(serverName, currentNanopub);
 			}
-			long end = System.currentTimeMillis();
-			System.out.printf("performance estimate: %d hours\n", ((end-start) * 637)/(1000 * 60 * 24));
+			//long end = System.currentTimeMillis();
+			//System.out.printf("performance estimate: %d hours\n", ((end-start) * 637)/(1000 * 60 * 24));
 		}
 	}
 	
@@ -133,7 +133,7 @@ public class Indexer {
 		getNanopubPackage(page, server);	// fills the nanopub list
 		if (nanopubs.size() == 0) {
 			System.out.println("ERROR no nanopubs found on page " + page);
-			return -1;
+			return 0;
 		}
 
 		for (Nanopub np : nanopubs) {
