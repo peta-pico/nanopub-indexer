@@ -16,7 +16,7 @@ $basepath = "http://" . $_SERVER['HTTP_HOST'] . pathinfo($_SERVER["PHP_SELF"])['
 $uri = $searchuriarray[0];
 $result = json_decode(trim(file_get_contents($basepath . '/database/api.php?format=json&search-uri=' . $uri)), true);
 foreach ($searchuriarray as $uri){
-	$url = $basepath . '/database/api.php?format=json&search-uri=' . $uri;
+	$url = $basepath . '/database/api.php?format=json&search-uri=' . trim($uri);
 	$tempresult = json_decode(trim(file_get_contents($url)), true);
 	$result = array_intersect($result, $tempresult);
 }
