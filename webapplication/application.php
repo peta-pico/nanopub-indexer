@@ -8,14 +8,16 @@ if (!$_GET['search-uri']){
 	printerror();
 }
 
-$searchuri = $_GET['search-uri'];
+$searchuri = trim($_GET['search-uri']);
 $searchuriarray = explode("\n", $searchuri);
 
 $basepath = "http://" . $_SERVER['HTTP_HOST'] . pathinfo($_SERVER["PHP_SELF"])['dirname'];
 
-$result = [];
+$uri = $searchuriarray[0];
+$result = json_decode(trim(file_get_contents($basepath . '/database/api.php?format=json&search-uri=' . $uri)), true);
 foreach ($searchuriarray as $uri){
-	$tempresult = json_decode(trim(file_get_contents($basepath . '/database/api.php?format=json&search-uri=' . $uri)), true);
+	$url = $basepath . '/database/api.php?format=json&search-uri=' . $uri;
+	$tempresult = json_decode(trim(file_get_contents($url)), true);
 	$result = array_intersect($result, $tempresult);
 }
 
