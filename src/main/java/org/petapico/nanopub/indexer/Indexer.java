@@ -42,12 +42,12 @@ public class Indexer {
 	
 	public static void main(String[] args) {
 		
-		/*
+		
 		args = new String[3];
 		args[0] = "root";
 		args[1] = "admin";
 		args[2] = "true";
-		*/
+		
 		
 		if (args.length < 2){
 			System.out.printf("Invalid arguments expected: dbusername, dbpassword\n");
@@ -100,14 +100,16 @@ public class Indexer {
 				db.updateJournalId(serverName, peerJid);
 			}
 			
-			long currentNanopub = dbNanopubNo;
+			//begin at start of page
+			int page = (int) (dbNanopubNo / peerPageSize);
+			long currentNanopub = page * peerPageSize;
 			System.out.printf("Starting from: %d\n", currentNanopub);
 			
 			long start = System.currentTimeMillis();
 			try {
 				while (currentNanopub < peerNanopubNo){
 					int addedNanopubs = 0;
-					int page = (int) (currentNanopub / peerPageSize) + 1; 	// compute the starting page
+					page = (int) (currentNanopub / peerPageSize) + 1; 	// compute the starting page
 
 					if ((peerNanopubNo - currentNanopub) < peerPageSize) {
 						System.out.println("last bits");
