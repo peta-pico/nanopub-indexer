@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ALL & ~E_NOTICE);
 
-$SUPPORTED_FORMATS = array("text", "json");
+$SUPPORTED_FORMATS = array("text", "json", "link");
 $RADIO_VALUES = array("on", "off");
 
 // INIT
