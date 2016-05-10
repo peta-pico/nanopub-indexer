@@ -6,7 +6,8 @@
 <form method="GET" action="database/api.php">
 	<h1> search for nanopubs </h1>
 	<p>
-		URI:<input type="text" name="search-uri" /><br />
+		URI: (seperate multiple uri's with a newline) <br/><textarea rows="10" cols="100" name="search-uri" /></textarea><br />
+		Page: (0 for no pages) <input type="number" value="1" min="0" max="10000000" name="page"/><br/>
 		
 		<input type="checkbox" name="head" checked />Head<br />
 		<input type="checkbox" name="assertion" checked />Assertion<br />
@@ -20,12 +21,15 @@
 	<input type="submit" value="Search" />
 </form>	
 	<hr />
+
+<!--
 <form method="GET" action="application.php">
 	<h1> Advanced search </h2>
 	<p>URI list: (seperate with a newline)</p>
 	<textarea rows="10" cols="50" name="search-uri"></textarea><br/>
 	<input type="submit" value="Search" />
 </form>
+-->
 </body>
 </html>
 

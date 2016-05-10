@@ -42,12 +42,12 @@ public class Indexer {
 	
 	public static void main(String[] args) {
 		
-		/*
+		
 		args = new String[3];
 		args[0] = "root";
 		args[1] = "admin";
 		args[2] = "true";
-		*/
+		
 		
 		if (args.length < 2){
 			System.out.printf("Invalid arguments expected: dbusername, dbpassword\n");
@@ -105,6 +105,9 @@ public class Indexer {
 			long currentNanopub = page * peerPageSize;
 			
 			System.out.printf("Starting from: %d\n", currentNanopub);
+			
+			printNpInfo("RA6jrrPL2NxxFWlo6HFWas1ufp0OdZzS_XKwQDXpJg3CY");
+			System.exit(1);
 			
 			long start = System.currentTimeMillis();
 			try {
@@ -172,6 +175,50 @@ public class Indexer {
 			coveredNanopubs ++;
 		}
 		return coveredNanopubs;
+	}
+	
+	public void printNpInfo(String artifactCode){
+		printNpInfo(GetNanopub.get(artifactCode));
+	}
+	
+	public void printNpInfo(Nanopub np){
+		System.out.printf("Assertion: \n ===== \n");
+		Set<Statement> statements = np.getAssertion();
+		printStatementInfo(statements);
+		System.out.printf("Provenance: \n ===== \n");
+		statements = np.getProvenance();
+		printStatementInfo(statements);
+		System.out.printf("Pubinfo: \n ===== \n");
+		statements = np.getPubinfo();
+		printStatementInfo(statements);
+		
+	}
+	
+	public void printStatementInfo(Set<Statement> statements){
+		for (Statement statement : statements){
+			Value object = statement.getObject();
+			URI predicate = statement.getPredicate();
+			Resource subject = statement.getSubject();
+
+			String objectStr = object.stringValue();
+			String subjectStr = subject.stringValue();
+			String predicateStr = predicate.toString();
+			
+			if (object instanceof URI){
+				System.out.printf("\t Object: %s\n", objectStr);
+			}else {
+				System.out.printf("\t (NON URI) Object: %s\n", objectStr);
+			}
+			
+			if (subject instanceof URI){
+				System.out.printf("\t Subject: %s\n", subjectStr);
+			}else {
+				System.out.printf("\t (NON URI) Subject: %s\n", subjectStr);
+			}
+			
+			System.out.printf("\t Predicate: %s\n", predicateStr);
+			
+		}
 	}
 	
 	public int insertNpInDatabase(Nanopub np, String artifactCode, boolean ignore) throws IOException, SQLException{

@@ -33,6 +33,12 @@ if (!in_array($format, $SUPPORTED_FORMATS, true)){
 	error_return("Invalid format");
 }
 
+// PAGE
+$page = 0;
+if ($_GET['page']){
+	$page = $_GET['page'];
+}
+
 // CHECK URI TYPES
 if ($_GET['head']){
 	$head = strtolower($_GET['head']);
@@ -65,11 +71,12 @@ if (!in_array($head, $RADIO_VALUES, true)){
 require_once("uriModel.php");
 
 // INIT
-$uri = $_GET['search-uri'];
+$uri = trim($_GET['search-uri']);
+$uriArray = array_map('trim', explode("\n", $uri));
 $uriObj = new URIs($conn);
 
 // GET RESULTS
-$result = $uriObj -> getArtifactCodes($uri, $head, $assertion, $provenance, $pubinfo);
+$result = $uriObj -> getArtifactCodes($uriArray, $head, $assertion, $provenance, $pubinfo, $page);
 
 // DISPlAY RESULTS
 if ($format == "json"){
@@ -78,8 +85,8 @@ if ($format == "json"){
 else if ($format == "text") {
 	returnText($result);
 }
-else if ($format == "xml"){
-	returnXML($result);
+else if ($format == "link") {
+	returnLink($result);
 }
 else {
 	error_return("invalid format");
@@ -93,6 +100,13 @@ function returnText($data){
 	$arraydata = json_decode($data, true);
 	foreach ($arraydata as $item){
 		echo $item . "<br/>";
+	}	
+}
+
+function returnText($data){
+	$arraydata = json_decode($data, true);
+	foreach ($arraydata as $item){
+		echo "<a href=" . $item . ">" . $item . "</a><br/>";
 	}	
 }
 
