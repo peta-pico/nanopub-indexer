@@ -103,7 +103,7 @@ function returnText($data){
 	}	
 }
 
-function returnText($data){
+function returnLink($data){
 	$arraydata = json_decode($data, true);
 	foreach ($arraydata as $item){
 		echo "<a href=" . $item . ">" . $item . "</a><br/>";
