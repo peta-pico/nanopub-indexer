@@ -42,12 +42,12 @@ public class Indexer {
 	
 	public static void main(String[] args) {
 		
-		
+		/*
 		args = new String[3];
 		args[0] = "root";
 		args[1] = "admin";
 		args[2] = "true";
-		
+		*/
 		
 		if (args.length < 2){
 			System.out.printf("Invalid arguments expected: dbusername, dbpassword\n");
@@ -106,8 +106,8 @@ public class Indexer {
 			
 			System.out.printf("Starting from: %d\n", currentNanopub);
 			
-			printNpInfo("RA6jrrPL2NxxFWlo6HFWas1ufp0OdZzS_XKwQDXpJg3CY");
-			System.exit(1);
+			//printNpInfo("RA6jrrPL2NxxFWlo6HFWas1ufp0OdZzS_XKwQDXpJg3CY");
+			//System.exit(1);
 			
 			long start = System.currentTimeMillis();
 			try {
