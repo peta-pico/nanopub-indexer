@@ -21,6 +21,16 @@
 	<input type="submit" value="Search" />
 </form>	
 	<hr />
+<h1> Examples </h1>
+<h3>Indexes: </h3>
+<p>Assertion: http://purl.org/nanopub/x/includesElement</p>
+<p>Provenance: http://purl.org/nanopub/x/IndexAssertion</p>
+<p>Pubinfo: http://purl.org/nanopub/x/NanopubIndex</p>
+<p>ArtifactCode example: RA6jrrPL2NxxFWlo6HFWas1ufp0OdZzS_XKwQDXpJg3CY</p>
+
+<h3> Random examples </h3>
+<p>http://www.nextprot.org/nanopubs#NX_P42771-1_PTM-0253_140.RAoMW0xMemwKEjCNWLFt8CgRmg_TGjfVSsh15hGfEmcz4</p>
+
 
 <!--
 <form method="GET" action="application.php">
