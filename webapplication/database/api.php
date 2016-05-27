@@ -99,7 +99,7 @@ function returnJSON($data){
 function returnText($data){
 	$arraydata = json_decode($data, true);
 	foreach ($arraydata as $item){
-		echo $item . "<br/>";
+		echo $item . PHP_EOL;
 	}	
 }
 
