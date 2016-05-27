@@ -22,7 +22,7 @@
 </form>	
 	<hr />
 <h1> Examples </h1>
-<h3>Indexes: </h3>
+<h3><a href="indexes.php">Indexes: (click to view the overview)</a></h3>
 <p>Assertion: http://purl.org/nanopub/x/includesElement</p>
 <p>Provenance: http://purl.org/nanopub/x/IndexAssertion</p>
 <p>Pubinfo: http://purl.org/nanopub/x/NanopubIndex</p>
