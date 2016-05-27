@@ -96,12 +96,12 @@ public class Indexes {
 	}
 	
 	public static void main(String[] args){
-		
+		/*
 		args = new String[3];
 		args[0] = "root";
 		args[1] = "admin";
 		args[2] = "true";
-		
+		*/
 		
 		
 		if (args.length < 2){
