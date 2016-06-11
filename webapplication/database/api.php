@@ -10,6 +10,8 @@ $head = "off";
 $assertion = "off";
 $provenance = "off";
 $pubinfo = "off";
+$begin_timestamp = NULL;
+$end_timestamp = NULL;
 
 require_once("connectDatabase.php");
 
@@ -64,6 +66,14 @@ if ($_GET['pubinfo']){
 if (!in_array($head, $RADIO_VALUES, true)){
 	error_return("invalid pubinfo value");
 }
+
+// TIMESTAMPS
+if ($_GET['begin_timestamp']){
+	$begin_timestamp = $_GET['begin_timestamp'];
+}
+if ($_GET['end_timestamp']){
+	$end_timestamp = $_GET['end_timestamp'];
+}
 // ==================== DONE ERROR CHECKING ====================
 
 
@@ -76,7 +86,7 @@ $uriArray = array_map('trim', explode("\n", $uri));
 $uriObj = new URIs($conn);
 
 // GET RESULTS
-$result = $uriObj -> getArtifactCodes($uriArray, $head, $assertion, $provenance, $pubinfo, $page);
+$result = $uriObj -> getArtifactCodes($uriArray, $head, $assertion, $provenance, $pubinfo, $page, $begin_timestamp, $end_timestamp);
 
 // DISPlAY RESULTS
 if ($format == "json"){

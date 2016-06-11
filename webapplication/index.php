@@ -8,6 +8,8 @@
 	<p>
 		URI: (seperate multiple uri's with a newline) <br/><textarea rows="10" cols="100" name="search-uri" /></textarea><br />
 		Page: (0 for no pages) <input type="number" value="1" min="0" max="10000000" name="page"/><br/>
+		<input type="number" name="begin_timestamp"/> Begin timestamp <br/>
+		<input type="number" name="end_timestamp"/> End timestamp <br/>
 		
 		<input type="checkbox" name="head" checked />Head<br />
 		<input type="checkbox" name="assertion" checked />Assertion<br />
@@ -16,6 +18,10 @@
 		
 		<input type="radio" name="format" value="text" required checked />text<br />
 		<input type="radio" name="format" value="json" required />JSON<br />
+		<input type="radio" name="format" value="link" required />link<br />
+
+
+		
 	</p>
 
 	<input type="submit" value="Search" />

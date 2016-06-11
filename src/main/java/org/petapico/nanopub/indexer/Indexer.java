@@ -191,6 +191,7 @@ public class Indexer {
 		System.out.printf("Pubinfo: \n ===== \n");
 		statements = np.getPubinfo();
 		printStatementInfo(statements);
+		System.out.printf("Created: %d\n", (np.getCreationTime().getTimeInMillis() / 1000));
 		
 	}
 	
@@ -225,7 +226,8 @@ public class Indexer {
 		int totalURIs = 0;
 		
 		if (!ignore){
-			db.insertNp(artifactCode);
+			int timestamp = (int) (np.getCreationTime().getTimeInMillis() / 1000);
+			db.insertNp(artifactCode, timestamp);
 		}
 		//totalURIs += insertStatementsInDB(np.getHead(), artifactCode, stmt, SECTION_HEAD);
 		totalURIs += insertStatementsInDB(np.getAssertion(), artifactCode, SECTION_ASSERTION, ignore);

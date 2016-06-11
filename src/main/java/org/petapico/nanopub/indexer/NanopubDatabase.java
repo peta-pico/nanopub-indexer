@@ -23,7 +23,7 @@ public class NanopubDatabase {
 		
 		selectNpStmt = conn.prepareStatement("SELECT finished FROM nanopubs WHERE artifactCode = ?");
 		updateNpStmt = conn.prepareStatement("UPDATE nanopubs SET finished = 1 WHERE artifactCode = ?");
-		insertNpStmt = conn.prepareStatement("INSERT INTO nanopubs VALUES (?, 0)");
+		insertNpStmt = conn.prepareStatement("INSERT INTO nanopubs VALUES (?, ?, 0)");
 	}
 	
 	private boolean insertServer(String serverName){
@@ -56,8 +56,9 @@ public class NanopubDatabase {
 		return result;
 	}
 	
-	public void insertNp(String artifactCode) throws SQLException{
+	public void insertNp(String artifactCode, int timestamp) throws SQLException{
 		insertNpStmt.setString(1, artifactCode);
+		insertNpStmt.setInt(2, timestamp);
 		insertNpStmt.executeUpdate();
 	}
 	

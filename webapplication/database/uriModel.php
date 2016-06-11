@@ -16,10 +16,17 @@ class URIs {
 	}
 
 	// RETURNS A LIST OF ARTIFACT CODES
-	public function getArtifactCodes($uri, $head, $assertion, $provenance, $pubinfo, $page){
+	public function getArtifactCodes($uri, $head, $assertion, $provenance, $pubinfo, $page, $begin_timestamp, $end_timestamp){
 		// BUILDS A QUERY LIKE: SELECT artifactCode FROM uris WHERE uri = ? AND sectionID IN (x) LIMIT 1000
 		$types = "";
-		$query = "SELECT artifactCode FROM uris WHERE uri IN (";
+		$params = $uri;
+		$query = "SELECT uris.artifactCode FROM uris";
+
+		if ($begin_timestamp || $end_timestamp){
+			$query .= " LEFT JOIN nanopubs ON nanopubs.artifactCode = uris.artifactCode";
+		}
+
+		$query .= " WHERE uri IN (";
 		foreach ($uri as $searchuri){
 			$query .= "?,";
 			$types .= "s";
@@ -48,6 +55,18 @@ class URIs {
 			$query .= ")";
 		}
 
+		if ($begin_timestamp){
+			$query .= " AND timestamp > ?";
+			$types .= "d";
+			$params[] = $begin_timestamp;
+		}
+		if ($end_timestamp){
+			$query .= " AND timestamp < ?";
+			$types .= "d";
+			$params[] = $end_timestamp;
+		}
+
+
 		$query .= " GROUP BY artifactCode";
 		$query .= " HAVING COUNT(*) = " . count($uri);
 		if ($page != 0){
@@ -55,7 +74,6 @@ class URIs {
 			$query .= " OFFSET " . ($page-1) * URIs::$PAGE_SIZE;
 		}
 
-		$params = $uri;
 		$data = mysqli_prepared_query($this->_conn, $query, $types, $params);
 		$result = array();
 

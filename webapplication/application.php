@@ -1,5 +1,5 @@
 <?php
-
+// OLD AND NOT USED ANYMORE -> NEW SOLUTION BY MAKING THE QUERIES MORE FLEXIBLE
 if (!$_GET){
 	printerror();
 }
