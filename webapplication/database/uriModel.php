@@ -92,6 +92,7 @@ class URIs {
 
 		if ($debug == true){
 			$result[] = $query;
+			$result = array_merge($result, $params);
 		}
 		return json_encode($result);
 	}
