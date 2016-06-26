@@ -68,7 +68,7 @@ class URIs {
 
 
 		$query .= " GROUP BY artifactCode";
-		$query .= " HAVING COUNT(*) = " . count($uri);
+		$query .= " HAVING COUNT(*) >= " . count($uri);
 
 		if ($order == 1){
 			$query .= " ORDER BY timestamp DESC";

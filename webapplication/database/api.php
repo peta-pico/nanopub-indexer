@@ -95,7 +95,7 @@ require_once("uriModel.php");
 // INIT
 $uri = trim($_GET['search-uri']);
 $uriArray = array_map('trim', explode("\n", $uri));
-print_r($uriArray);
+
 $uriObj = new URIs($conn);
 
 // GET RESULTS
