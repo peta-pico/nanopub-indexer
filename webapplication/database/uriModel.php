@@ -22,7 +22,7 @@ class URIs {
 		$params = $uri;
 		$query = "SELECT uris.artifactCode FROM uris";
 
-		if ($begin_timestamp || $end_timestamp){
+		if ($begin_timestamp || $end_timestamp || $order == 1 || $order == 2){
 			$query .= " LEFT JOIN nanopubs ON nanopubs.artifactCode = uris.artifactCode";
 		}
 
@@ -72,7 +72,7 @@ class URIs {
 
 		if ($order == 1){
 			$query .= " ORDER BY timestamp DESC";
-		}else {
+		} else if ($order == 2){
 			$query .= " ORDER BY timestamp ASC";
 		}
 

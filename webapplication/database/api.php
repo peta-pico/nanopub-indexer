@@ -12,7 +12,7 @@ $provenance = "off";
 $pubinfo = "off";
 $begin_timestamp = NULL;
 $end_timestamp = NULL;
-$order = 1;
+$order = 0;
 $debug = false;
 
 require_once("connectDatabase.php");
@@ -95,6 +95,7 @@ require_once("uriModel.php");
 // INIT
 $uri = trim($_GET['search-uri']);
 $uriArray = array_map('trim', explode("\n", $uri));
+print_r($uriArray);
 $uriObj = new URIs($conn);
 
 // GET RESULTS

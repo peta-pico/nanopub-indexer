@@ -10,8 +10,9 @@
 		Page: (0 for no pages) <input type="number" value="1" min="0" max="10000000" name="page"/><br/><br/>
 		<input type="number" name="begin_timestamp"/> Begin timestamp <br/>
 		<input type="number" name="end_timestamp"/> End timestamp <br/>
+		<input type="radio" name="order" value="0" checked/> No order<br/>
 		<input type="radio" name="order" value="1" checked/> Order descending timestamp<br/>
-		<input type="radio" name="order" value="0"/> Order ascending timestamp
+		<input type="radio" name="order" value="2"/> Order ascending timestamp
 		<br/><br/>
 		
 		<input type="checkbox" name="head" checked />Head<br />
