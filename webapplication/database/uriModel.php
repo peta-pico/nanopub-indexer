@@ -16,7 +16,7 @@ class URIs {
 	}
 
 	// RETURNS A LIST OF ARTIFACT CODES
-	public function getArtifactCodes($uri, $head, $assertion, $provenance, $pubinfo, $page, $begin_timestamp, $end_timestamp, $order){
+	public function getArtifactCodes($uri, $head, $assertion, $provenance, $pubinfo, $page, $begin_timestamp, $end_timestamp, $order, $debug){
 		// BUILDS A QUERY LIKE: SELECT artifactCode FROM uris WHERE uri = ? AND sectionID IN (x) LIMIT 1000
 		$types = "";
 		$params = $uri;
@@ -84,12 +84,14 @@ class URIs {
 		$data = mysqli_prepared_query($this->_conn, $query, $types, $params);
 		$result = array();
 
-		foreach ($data as $item){
-			$result[] = $item['artifactCode'];
+		if ($data){
+			foreach ($data as $item){
+				$result[] = $item['artifactCode'];
+			}
 		}
 
 		if ($debug == true){
-			$result['query'] = $query;
+			$result[] = $query;
 		}
 		return json_encode($result);
 	}
