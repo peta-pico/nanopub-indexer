@@ -16,7 +16,7 @@ class URIs {
 	}
 
 	// RETURNS A LIST OF ARTIFACT CODES
-	public function getArtifactCodes($uri, $head, $assertion, $provenance, $pubinfo, $page, $begin_timestamp, $end_timestamp){
+	public function getArtifactCodes($uri, $head, $assertion, $provenance, $pubinfo, $page, $begin_timestamp, $end_timestamp, $order){
 		// BUILDS A QUERY LIKE: SELECT artifactCode FROM uris WHERE uri = ? AND sectionID IN (x) LIMIT 1000
 		$types = "";
 		$params = $uri;
@@ -69,6 +69,13 @@ class URIs {
 
 		$query .= " GROUP BY artifactCode";
 		$query .= " HAVING COUNT(*) = " . count($uri);
+
+		if ($order == 1){
+			$query .= " ORDER BY timestamp DESC";
+		}else {
+			$query .= " ORDER BY timestamp ASC";
+		}
+
 		if ($page != 0){
 			$query .= " LIMIT " . URIs::$PAGE_SIZE;
 			$query .= " OFFSET " . ($page-1) * URIs::$PAGE_SIZE;
@@ -79,6 +86,10 @@ class URIs {
 
 		foreach ($data as $item){
 			$result[] = $item['artifactCode'];
+		}
+
+		if ($debug == true){
+			$result['query'] = $query;
 		}
 		return json_encode($result);
 	}

@@ -12,6 +12,8 @@ $provenance = "off";
 $pubinfo = "off";
 $begin_timestamp = NULL;
 $end_timestamp = NULL;
+$order = 1;
+$debug = false;
 
 require_once("connectDatabase.php");
 
@@ -74,6 +76,16 @@ if ($_GET['begin_timestamp']){
 if ($_GET['end_timestamp']){
 	$end_timestamp = $_GET['end_timestamp'];
 }
+if ($_GET['order']){
+	if ($_GET['order'] == 0){
+		$order = 0;
+	}
+}
+
+if ($_GET['debug']){
+	$debug = true;
+}
+
 // ==================== DONE ERROR CHECKING ====================
 
 
@@ -86,7 +98,7 @@ $uriArray = array_map('trim', explode("\n", $uri));
 $uriObj = new URIs($conn);
 
 // GET RESULTS
-$result = $uriObj -> getArtifactCodes($uriArray, $head, $assertion, $provenance, $pubinfo, $page, $begin_timestamp, $end_timestamp);
+$result = $uriObj -> getArtifactCodes($uriArray, $head, $assertion, $provenance, $pubinfo, $page, $begin_timestamp, $end_timestamp, $order, $debug);
 
 // DISPlAY RESULTS
 if ($format == "json"){

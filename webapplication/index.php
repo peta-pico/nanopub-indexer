@@ -7,9 +7,12 @@
 	<h1> search for nanopubs </h1>
 	<p>
 		URI: (seperate multiple uri's with a newline) <br/><textarea rows="10" cols="100" name="search-uri" /></textarea><br />
-		Page: (0 for no pages) <input type="number" value="1" min="0" max="10000000" name="page"/><br/>
+		Page: (0 for no pages) <input type="number" value="1" min="0" max="10000000" name="page"/><br/><br/>
 		<input type="number" name="begin_timestamp"/> Begin timestamp <br/>
 		<input type="number" name="end_timestamp"/> End timestamp <br/>
+		<input type="radio" name="order" value="1" checked/> Order descending timestamp<br/>
+		<input type="radio" name="order" value="0"/> Order ascending timestamp
+		<br/><br/>
 		
 		<input type="checkbox" name="head" checked />Head<br />
 		<input type="checkbox" name="assertion" checked />Assertion<br />
