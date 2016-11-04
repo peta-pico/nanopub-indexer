@@ -77,6 +77,7 @@ Host the webapplication and make sure to add a
 using a MySQLi object that is stored in '$conn'
 
 e.g.
+
 	<?php
 	$servername = "localhost";
 	$username = "root";
@@ -95,68 +96,68 @@ e.g.
 http://petapico.d2s.labs.vu.nl/api/
 
 ### Database layout
-mysql> show tables;
-+--------------------+
-| Tables_in_nanopubs |
-+--------------------+
-| indexes            |
-| nanopubs           |
-| servers            |
-| type_sections      |
-| uris               |
-+--------------------+
+	mysql> show tables;
+	+--------------------+
+	| Tables_in_nanopubs |
+	+--------------------+
+	| indexes            |
+	| nanopubs           |
+	| servers            |
+	| type_sections      |
+	| uris               |
+	+--------------------+
 
-mysql> desc indexes;
-+--------------+--------------+------+-----+---------+-------+
-| Field        | Type         | Null | Key | Default | Extra |
-+--------------+--------------+------+-----+---------+-------+
-| artifactCode | varchar(128) | NO   | PRI | NULL    |       |
-| title        | varchar(512) | NO   |     | NULL    |       |
-| children     | int(11)      | NO   |     | NULL    |       |
-+--------------+--------------+------+-----+---------+-------+
+	mysql> desc indexes;
+	+--------------+--------------+------+-----+---------+-------+
+	| Field        | Type         | Null | Key | Default | Extra |
+	+--------------+--------------+------+-----+---------+-------+
+	| artifactCode | varchar(128) | NO   | PRI | NULL    |       |
+	| title        | varchar(512) | NO   |     | NULL    |       |
+	| children     | int(11)      | NO   |     | NULL    |       |
+	+--------------+--------------+------+-----+---------+-------+
 
-mysql> desc nanopubs;
-+--------------+--------------+------+-----+---------+-------+
-| Field        | Type         | Null | Key | Default | Extra |
-+--------------+--------------+------+-----+---------+-------+
-| artifactCode | varchar(255) | NO   | PRI | NULL    |       |
-| timestamp    | int(16)      | NO   |     | NULL    |       |
-| finished     | tinyint(4)   | NO   |     | 0       |       |
-+--------------+--------------+------+-----+---------+-------+
+	mysql> desc nanopubs;
+	+--------------+--------------+------+-----+---------+-------+
+	| Field        | Type         | Null | Key | Default | Extra |
+	+--------------+--------------+------+-----+---------+-------+
+	| artifactCode | varchar(255) | NO   | PRI | NULL    |       |
+	| timestamp    | int(16)      | NO   |     | NULL    |       |
+	| finished     | tinyint(4)   | NO   |     | 0       |       |
+	+--------------+--------------+------+-----+---------+-------+
 
-mysql> desc servers;
-+---------------+--------------+------+-----+---------+----------------+
-| Field         | Type         | Null | Key | Default | Extra          |
-+---------------+--------------+------+-----+---------+----------------+
-| id            | int(11)      | NO   | PRI | NULL    | auto_increment |
-| serverName    | varchar(255) | NO   |     | NULL    |                |
-| nextNanopubNo | bigint(32)   | NO   |     | 0       |                |
-| journalId     | bigint(32)   | NO   |     | 0       |                |
-+---------------+--------------+------+-----+---------+----------------+
+	mysql> desc servers;
+	+---------------+--------------+------+-----+---------+----------------+
+	| Field         | Type         | Null | Key | Default | Extra          |
+	+---------------+--------------+------+-----+---------+----------------+
+	| id            | int(11)      | NO   | PRI | NULL    | auto_increment |
+	| serverName    | varchar(255) | NO   |     | NULL    |                |
+	| nextNanopubNo | bigint(32)   | NO   |     | 0       |                |
+	| journalId     | bigint(32)   | NO   |     | 0       |                |
+	+---------------+--------------+------+-----+---------+----------------+
 
-mysql> desc type_sections;
-+---------+-------------+------+-----+---------+----------------+
-| Field   | Type        | Null | Key | Default | Extra          |
-+---------+-------------+------+-----+---------+----------------+
-| id      | tinyint(4)  | NO   | PRI | NULL    | auto_increment |
-| section | varchar(64) | NO   |     | NULL    |                |
-+---------+-------------+------+-----+---------+----------------+
+	mysql> desc type_sections;
+	+---------+-------------+------+-----+---------+----------------+
+	| Field   | Type        | Null | Key | Default | Extra          |
+	+---------+-------------+------+-----+---------+----------------+
+	| id      | tinyint(4)  | NO   | PRI | NULL    | auto_increment |
+	| section | varchar(64) | NO   |     | NULL    |                |
+	+---------+-------------+------+-----+---------+----------------+
 
-mysql> select * from type_sections;
-+----+------------+
-| id | section    |
-+----+------------+
-|  1 | head       |
-|  2 | assertion  |
-|  3 | provenance |
-|  4 | pubinfo    |
-+----+------------+
+	mysql> select * from type_sections;
+	+----+------------+
+	| id | section    |
+	+----+------------+
+	|  1 | head       |
+	|  2 | assertion  |
+	|  3 | provenance |
+	|  4 | pubinfo    |
+	+----+------------+
 
-mysql> desc uris;
-+--------------+--------------+------+-----+---------+-------+
-| Field        | Type         | Null | Key | Default | Extra |
-+--------------+--------------+------+-----+---------+-------+
-| URI          | varchar(767) | NO   | PRI | NULL    |       |
-| artifactCode | varchar(128) | NO   | PRI | NULL    |       |
-| sectionID    | tinyint(4)   | NO   | PRI | NULL    |       |
-+--------------+--------------+------+-----+---------+-------+
+	mysql> desc uris;
+	+--------------+--------------+------+-----+---------+-------+
+	| Field        | Type         | Null | Key | Default | Extra |
+	+--------------+--------------+------+-----+---------+-------+
+	| URI          | varchar(767) | NO   | PRI | NULL    |       |
+	| artifactCode | varchar(128) | NO   | PRI | NULL    |       |
+	| sectionID    | tinyint(4)   | NO   | PRI | NULL    |       |
+	+--------------+--------------+------+-----+---------+-------+
