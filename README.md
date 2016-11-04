@@ -12,8 +12,10 @@ Database layout described below
 
 ### Run Code at the nanopubs server
 
-To run the preliminary code from the command line (after pulling the project).
+To run the preliminary code from the command line
 Make sure a mysql database 'nanopubs' is running
+
+Make sure the latest version is present (if not pull from git server)
 
 First compile with Maven:
 
@@ -45,7 +47,7 @@ You should get an output like this:
 	
 To run the deamon use:
 
-	$ scripts/Indexer.sh <dbusername> <dbpassword> > output.text &
+	$ scripts/Indexer.sh <dbusername> <dbpassword> > output.txt &
 
 ### Run code (windows + eclipse)
 
