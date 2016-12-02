@@ -106,8 +106,8 @@ public class Indexer {
 			
 			System.out.printf("Starting from: %d\n", currentNanopub);
 			
-			//printNpInfo("RA6jrrPL2NxxFWlo6HFWas1ufp0OdZzS_XKwQDXpJg3CY");
-			//System.exit(1);
+			// printNpInfo("RAf640CMza6y-gQEvCsahGFmgCp2AKeYJZLar91EB3oaQ");
+			// System.exit(1);
 			
 			long start = System.currentTimeMillis();
 			try {
@@ -117,21 +117,10 @@ public class Indexer {
 
 					if ((peerNanopubNo - currentNanopub) < peerPageSize) {
 						System.out.println("last bits");
-						List<String> nanopubsOnPage = NanopubServerUtils.loadNanopubUriList(si, page);
-						for (String artifactCode : nanopubsOnPage) {
-							Nanopub np = GetNanopub.get(artifactCode);							
-							int insertStatus = db.npInserted(artifactCode);
-							if (insertStatus == -1){		// not inserted
-								insertNpInDatabase(np, artifactCode, false);	
-							}
-							else if (insertStatus == 0){	// started but not finished
-								insertNpInDatabase(np, artifactCode, true);
-							}
-							addedNanopubs ++;
-						}
+						addedNanopubs = insertLastNanopubsFromPage(page, si); // add all nanopubs from page by going over them 1 by 1
 					}
 					else {
-						addedNanopubs = insertNanopubsFromPage(page, serverName); // add all nanopubs from page
+						addedNanopubs = insertNanopubsFromPage(page, serverName); // add all nanopubs from page by downloading entire page
 					}
 					currentNanopub += addedNanopubs;
 					if (addedNanopubs < peerPageSize && currentNanopub < peerNanopubNo) {
@@ -154,6 +143,23 @@ public class Indexer {
 		}
 	}
 	
+	
+	public int insertLastNanopubsFromPage(int page, ServerInfo si) throws Exception{
+		int addedNanopubs = 0;
+		List<String> nanopubsOnPage = NanopubServerUtils.loadNanopubUriList(si, page);
+		for (String artifactCode : nanopubsOnPage) {
+			Nanopub np = GetNanopub.get(artifactCode);							
+			int insertStatus = db.npInserted(artifactCode); // 1 = finished, 0 = going, -1 = not inserted
+			if (insertStatus == -1){		// not inserted
+				insertNpInDatabase(np, artifactCode, false);	
+			}
+			else if (insertStatus == 0){	// started but not finished
+				insertNpInDatabase(np, artifactCode, true);
+			}
+			addedNanopubs ++;
+		}
+		return addedNanopubs;
+	}
 	public int insertNanopubsFromPage(int page, String server) throws Exception{
 		int coveredNanopubs = 0;
 		getNanopubPackage(page, server);	// fills the nanopub list
@@ -164,6 +170,7 @@ public class Indexer {
 
 		for (Nanopub np : nanopubs) {
 			String artifactCode = np.getUri().toString();
+			System.out.printf("np: %s\n", artifactCode);
 			int insertStatus = db.npInserted(artifactCode);
 			if (insertStatus == -1){		// not inserted
 				insertNpInDatabase(np, artifactCode, false);	
@@ -191,7 +198,14 @@ public class Indexer {
 		System.out.printf("Pubinfo: \n ===== \n");
 		statements = np.getPubinfo();
 		printStatementInfo(statements);
-		System.out.printf("Created: %d\n", (np.getCreationTime().getTimeInMillis() / 1000));
+		System.out.printf("Other: \n ===== \n");
+		try {
+		System.out.printf("creationtime %d\n", np.getCreationTime());
+		System.out.printf("\tCreated: %d\n", (np.getCreationTime().getTimeInMillis() / 1000));
+		}
+		catch (Exception E){
+			System.out.printf("Exception: %s\n", E);
+		}
 		
 	}
 	
@@ -226,7 +240,13 @@ public class Indexer {
 		int totalURIs = 0;
 		
 		if (!ignore){
-			int timestamp = (int) (np.getCreationTime().getTimeInMillis() / 1000);
+			int timestamp = -1;
+			try {
+				timestamp = (int) (np.getCreationTime().getTimeInMillis() / 1000);
+			}
+			catch (Exception E){
+				System.out.printf("Warning invalid timestamp for: %s (%b)\n", artifactCode, ignore);
+			}
 			db.insertNp(artifactCode, timestamp);
 		}
 		//totalURIs += insertStatementsInDB(np.getHead(), artifactCode, stmt, SECTION_HEAD);
