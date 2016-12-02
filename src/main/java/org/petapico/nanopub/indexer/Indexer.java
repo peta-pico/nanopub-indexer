@@ -170,7 +170,6 @@ public class Indexer {
 
 		for (Nanopub np : nanopubs) {
 			String artifactCode = np.getUri().toString();
-			System.out.printf("np: %s\n", artifactCode);
 			int insertStatus = db.npInserted(artifactCode);
 			if (insertStatus == -1){		// not inserted
 				insertNpInDatabase(np, artifactCode, false);	
