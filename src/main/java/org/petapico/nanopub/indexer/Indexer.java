@@ -63,18 +63,20 @@ public class Indexer {
 				System.out.println("Run error");
 				System.out.println(E.getMessage());
 			}
+			System.out.printf("run finished\n");
 			// sleep ?
 		}
 	}
 
 	public Indexer(String dbusername, String dbpassword) throws ClassNotFoundException, SQLException {
 		db = new NanopubDatabase(dbusername, dbpassword);
-		System.out.printf("db connected '%s' '%s'\n", dbusername, dbpassword);
+		System.out.printf("New running instance: db connected\n");
 	}
 
 	public void run() throws IOException, RDFHandlerException, Exception {
 		ServerIterator serverIterator = new ServerIterator();
-
+		System.out.printf("serveriterator: %s\n", serverIterator.toString());
+		
 		while (serverIterator.hasNext()) {
 			ServerInfo si = serverIterator.next();
 			String serverName = si.getPublicUrl();
