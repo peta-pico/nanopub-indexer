@@ -69,6 +69,7 @@ public class Indexer {
 
 	public Indexer(String dbusername, String dbpassword) throws ClassNotFoundException, SQLException {
 		db = new NanopubDatabase(dbusername, dbpassword);
+		System.out.printf("db connected '%s' '%s'\n", dbusername, dbpassword);
 	}
 
 	public void run() throws IOException, RDFHandlerException, Exception {
