@@ -36,7 +36,8 @@ public class Indexes {
 			nanopubIndexes = NanopubServerUtils.loadList(url);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+			System.out.printf("server error\n");
 		}
 
 		// loop through all index nanopub
@@ -49,40 +50,63 @@ public class Indexes {
 			if (!isInserted){
 				int childNodes = 0;
 				System.out.printf("%s \n", artifactCode);
-				Set<Statement> statements = np.getAssertion();
-				for (Statement statement : statements){
-					Value object = statement.getObject();
-					URI predicate = statement.getPredicate();
-					Resource subject = statement.getSubject();
-					
-					String predicateStr = predicate.toString();
-					if (predicateStr.equals("http://purl.org/nanopub/x/includesElement")){
-						childNodes ++;//System.out.printf("%s %s %s\n", object.toString(), predicate.toString(), subject.toString());
-					}
-				}
-				System.out.printf("children: %d\n", childNodes);
 				
-				statements = np.getPubinfo();
-				String title = null;
-				for (Statement statement : statements){
-					Value object = statement.getObject();
-					URI predicate = statement.getPredicate();
-					Resource subject = statement.getSubject();
-					
-					String predicateStr = predicate.toString();
-					String subjectStr = subject.toString();
-					if (predicateStr.equals("http://purl.org/dc/elements/1.1/title") && subjectStr.equals(artifactCode)){
-						// System.out.printf("1:%s\n2:%s\n3:%s\n\n", object.toString(), predicate.toString(), subject.toString());
-						title = object.toString();
+				Set<Statement> statements = null;
+				try {
+					statements = np.getAssertion();
+					for (Statement statement : statements){
+						try {
+							Value object = statement.getObject();
+							URI predicate = statement.getPredicate();
+							Resource subject = statement.getSubject();
+							
+							String predicateStr = predicate.toString();
+							if (predicateStr.equals("http://purl.org/nanopub/x/includesElement")){
+								childNodes ++;//System.out.printf("%s %s %s\n", object.toString(), predicate.toString(), subject.toString());
+							}
+						}
+						catch (Exception E){
+							System.out.printf("statement error\n");
+						}	
 					}
-					
 				}
+				catch (Exception E){
+					System.out.printf("Error no assertions found\n");
+				}
+				
+				System.out.printf("children: %d\n", childNodes);
+				String title = null;
+				try {
+					statements = np.getPubinfo();
+					for (Statement statement : statements){
+						try {
+							Value object = statement.getObject();
+							URI predicate = statement.getPredicate();
+							Resource subject = statement.getSubject();
+							
+							String predicateStr = predicate.toString();
+							String subjectStr = subject.toString();
+							if (predicateStr.equals("http://purl.org/dc/elements/1.1/title") && subjectStr.equals(artifactCode)){
+								// System.out.printf("1:%s\n2:%s\n3:%s\n\n", object.toString(), predicate.toString(), subject.toString());
+								title = object.toString();
+							}
+						}
+						catch (Exception E){
+							System.out.printf("statement2 error\n");
+						}
+						
+					}
+				}
+				catch (Exception E){
+					System.out.printf("Error no pubinfo found\n");
+				}
+				
 				
 				try {
 					insertIndex(artifactCode, title, childNodes);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					System.out.printf("insert error\n");
 				}
 			}
 		}
@@ -96,13 +120,11 @@ public class Indexes {
 	}
 	
 	public static void main(String[] args){
-		/*
+		
 		args = new String[3];
 		args[0] = "root";
 		args[1] = "admin";
 		args[2] = "true";
-		*/
-		
 		
 		if (args.length < 2){
 			System.out.printf("Invalid arguments expected: dbusername, dbpassword\n");
@@ -113,7 +135,8 @@ public class Indexes {
 			new Indexes(args[0], args[1]).start();
 		} catch (ClassNotFoundException | SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+			System.out.printf("object error\n");
 		}
 	}
 }
