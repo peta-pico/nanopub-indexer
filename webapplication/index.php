@@ -6,13 +6,13 @@
 <form method="GET" action="database/api.php">
 	<h1> search for nanopubs </h1>
 	<p>
-		URI: (seperate multiple uri's with a newline) <br/><textarea rows="10" cols="100" name="search-uri" /></textarea><br />
+		URI: (separate multiple URIs with a newline) <br/><textarea rows="10" cols="100" name="search-uri" /></textarea><br />
 		Page: (0 for no pages) <input type="number" value="1" min="0" max="10000000" name="page"/><br/><br/>
 		<input type="number" name="begin_timestamp"/> Begin timestamp <br/>
 		<input type="number" name="end_timestamp"/> End timestamp <br/>
-		<input type="radio" name="order" value="0" checked/> No order<br/>
-		<input type="radio" name="order" value="1" checked/> Order descending timestamp<br/>
-		<input type="radio" name="order" value="2"/> Order ascending timestamp
+		<input type="radio" name="order" value="0"/>unordered<br/>
+		<input type="radio" name="order" value="1" checked/>descending order by timestamp<br/>
+		<input type="radio" name="order" value="2"/>ascending order by timestamp
 		<br/><br/>
 		
 		<input type="checkbox" name="head" checked />Head<br />
@@ -30,16 +30,8 @@
 
 	<input type="submit" value="Search" />
 </form>	
-	<hr />
-<h1> Examples </h1>
-<h3><a href="indexes.php">Indexes: (click to view the overview)</a></h3>
-<p>Assertion: http://purl.org/nanopub/x/includesElement</p>
-<p>Provenance: http://purl.org/nanopub/x/IndexAssertion</p>
-<p>Pubinfo: http://purl.org/nanopub/x/NanopubIndex</p>
-<p>ArtifactCode example: RA6jrrPL2NxxFWlo6HFWas1ufp0OdZzS_XKwQDXpJg3CY</p>
-
-<h3> Random examples </h3>
-<p>http://www.nextprot.org/nanopubs#NX_P42771-1_PTM-0253_140.RAoMW0xMemwKEjCNWLFt8CgRmg_TGjfVSsh15hGfEmcz4</p>
+<hr />
+<h3><a href="indexes.php">Indexes</a></h3>
 
 
 <!--
