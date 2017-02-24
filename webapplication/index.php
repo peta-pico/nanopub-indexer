@@ -7,14 +7,13 @@
 <form method="GET" action="database/api.php">
 	<h1>Nanopublication Search</h1>
 	<p>
-		URI: (separate multiple URIs with a newline) <br/><textarea rows="10" cols="100" name="search-uri" /></textarea><br />
-		Page: (0 for no pages) <input type="number" value="1" min="0" max="10000000" name="page"/><br/><br/>
-		<input type="number" name="begin_timestamp"/> Begin timestamp <br/>
-		<input type="number" name="end_timestamp"/> End timestamp <br/>
-		<input type="radio" name="order" value="0"/>unordered<br/>
-		<input type="radio" name="order" value="1" checked/>descending order by timestamp<br/>
-		<input type="radio" name="order" value="2"/>ascending order by timestamp
-		<br/><br/>
+		URIs (one URI per line): <br/><textarea rows="10" cols="100" name="search-uri" /></textarea><br />
+		Page (0 for no pages): <input type="number" value="1" min="0" max="10000000" name="page"/><br/><br/>
+		Begin timestamp: <input type="number" name="begin_timestamp"/><br/>
+		End timestamp: <input type="number" name="end_timestamp"/><br/>
+		Order: <input type="radio" name="order" value="0"/>unordered
+		<input type="radio" name="order" value="1" checked/>descending by timestamp
+		<input type="radio" name="order" value="2"/>ascending by timestamp<br/>
 		
 		<input type="checkbox" name="head" checked />Head<br />
 		<input type="checkbox" name="assertion" checked />Assertion<br />
