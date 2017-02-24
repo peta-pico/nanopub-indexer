@@ -28,10 +28,7 @@ URIs (one URI per line): <br/><textarea rows="10" cols="100" name="search-uri" /
 </p>
 
 <input type="submit" value="Search" />
-</form>	
-<hr />
-<h3><a href="indexes.php">Indexes</a></h3>
-
+</form>
 
 <!--
 <form method="GET" action="application.php">
