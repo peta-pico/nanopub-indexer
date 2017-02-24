@@ -1,6 +1,7 @@
 <html>
 <head>
 <title>Nanopublication Search</title>
+<link rel="stylesheet" href="plain.css" type="text/css" media="screen" title="Stylesheet" />
 </head>
 <body>
 <form method="GET" action="database/api.php">
