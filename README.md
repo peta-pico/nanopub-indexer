@@ -8,9 +8,10 @@ _(under construction)_
 
 Java 1.7, Maven, MySQL database, PHP, Apache.
 
-Database layout described below
+The database layout is described below.
 
-### Run Code at the nanopubs server
+
+### Run on the Server Side
 
 To run the preliminary code from the command line
 Make sure a mysql database 'nanopubs' is running
@@ -99,7 +100,7 @@ e.g.
 http://petapico.d2s.labs.vu.nl/api/
 
 
-### Database layout
+### Database Layout
 
 	mysql> show tables;
 	+--------------------+
