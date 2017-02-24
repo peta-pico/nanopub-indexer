@@ -12,8 +12,8 @@
 URIs (one URI per line): <br/><textarea rows="10" cols="100" name="search-uri" /></textarea><br />
 Page (0 for no pages): <input type="number" value="1" min="0" max="10000000" name="page"/><br/><br/>
 <table>
-<tr><th>Begin timestamp:</th><th><input type="number" name="begin_timestamp"/></th></tr>
-<tr><th>End timestamp:</th><th><input type="number" name="end_timestamp"/></th></tr>
+<tr><td>Begin timestamp:</td><td><input type="number" name="begin_timestamp"/></td></tr>
+<tr><td>End timestamp:</td><td><input type="number" name="end_timestamp"/></td></tr>
 </table>
 Order: <input type="radio" name="order" value="0"/>unordered
 <input type="radio" name="order" value="1" checked/>descending by timestamp
