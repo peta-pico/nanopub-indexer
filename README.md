@@ -49,7 +49,8 @@ To run the deamon use:
 
 	$ scripts/Indexer.sh <dbusername> <dbpassword> > output.txt &
 
-### Run code (windows + eclipse)
+
+### Run under Windows with Eclipse
 
 First time run (to be able to import the package in eclipse):
 
@@ -71,7 +72,9 @@ Next of one can run the mvn package command on the nanopub-indexer folder:
 
 And simply run the indexer in eclipse
 
+
 ### Search for nanopubs
+
 Host the webapplication and make sure to add a
 'connectDatabase.php' with that makes a valid connection to the MySQL database mentioned below.
 using a MySQLi object that is stored in '$conn'
@@ -95,7 +98,9 @@ e.g.
 
 http://petapico.d2s.labs.vu.nl/api/
 
+
 ### Database layout
+
 	mysql> show tables;
 	+--------------------+
 	| Tables_in_nanopubs |
