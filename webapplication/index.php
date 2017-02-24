@@ -1,6 +1,6 @@
 <html>
 <head>
-<title> Search for nanopublications </title>
+<title>Nanopublication Search</title>
 </head>
 <body>
 <form method="GET" action="database/api.php">
