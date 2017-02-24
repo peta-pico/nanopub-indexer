@@ -11,7 +11,7 @@
 <p>
 URIs (one URI per line): <br/><textarea rows="10" cols="100" name="search-uri" /></textarea><br/>
 <table>
-<tr><td>Page (0 for no pages):</td><td><input type="number" value="1" min="0" max="10000000" name="page"/></td></tr>
+<tr><td>Page:</td><td><input type="number" value="1" min="0" max="10000000" name="page"/> (0 for no pages)</td></tr>
 <tr><td>Begin timestamp:</td><td><input type="number" name="begin_timestamp"/></td></tr>
 <tr><td>End timestamp:</td><td><input type="number" name="end_timestamp"/></td></tr>
 <tr><td>Order:</td><td><input type="radio" name="order" value="0"/>unordered
