@@ -4,7 +4,7 @@
 </head>
 <body>
 <form method="GET" action="database/api.php">
-	<h1> search for nanopubs </h1>
+	<h1>Nanopublication Search</h1>
 	<p>
 		URI: (separate multiple URIs with a newline) <br/><textarea rows="10" cols="100" name="search-uri" /></textarea><br />
 		Page: (0 for no pages) <input type="number" value="1" min="0" max="10000000" name="page"/><br/><br/>
