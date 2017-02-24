@@ -37,7 +37,7 @@
     <dependency>
       <groupId>org.nanopub</groupId>
       <artifactId>nanopub</artifactId>
-      <version>1.9</version>
+      <version>1.11</version>
     </dependency>
 	<dependency>
 		<groupId>mysql</groupId>
