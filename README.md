@@ -167,3 +167,12 @@ http://petapico.d2s.labs.vu.nl/api/
 	| artifactCode | varchar(128) | NO   | PRI | NULL    |       |
 	| sectionID    | tinyint(4)   | NO   | PRI | NULL    |       |
 	+--------------+--------------+------+-----+---------+-------+
+
+
+### Index Created
+
+by Tobias:
+
+    mysql> create index timestamp_index on nanopubs (timestamp);
+
+not sure it worked...
