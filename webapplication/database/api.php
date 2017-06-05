@@ -136,10 +136,13 @@ function returnText($data){
 
 function returnHtml($data){
 	header('Content-Type: text/html');
+	echo "<!DOCTYPE html>";
+	echo "<html><head><title>Results</title></head><body><ul>"
 	$arraydata = json_decode($data, true);
 	foreach ($arraydata as $item){
-		echo "<a href=" . $item . ">" . $item . "</a><br/>";
+		echo "<li><a href=" . $item . ">" . $item . "</a></li>";
 	}
+	echo "</ul></body></html>"
 }
 
 function error_return($msg){

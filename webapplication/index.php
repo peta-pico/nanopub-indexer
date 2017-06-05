@@ -21,9 +21,9 @@ URIs (one URI per line): <br/><textarea rows="10" cols="100" name="search-uri" /
   <input type="checkbox" name="assertion" checked />Assertion
   <input type="checkbox" name="provenance" checked />Provenance
   <input type="checkbox" name="pubinfo" checked />Pubinfo</td></tr>
-<tr><td>Return format:</td><td><input type="radio" name="format" value="text" required checked />text
+<tr><td>Return format:</td><td><input type="radio" name="format" value="text" required />text
   <input type="radio" name="format" value="json" required />JSON
-  <input type="radio" name="format" value="html" required />HTML</td></tr>
+  <input type="radio" name="format" value="html" required checked />HTML</td></tr>
 </table>
 </p>
 
