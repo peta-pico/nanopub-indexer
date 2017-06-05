@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ALL & ~E_NOTICE);
 
-$SUPPORTED_FORMATS = array("text", "json", "link");
+$SUPPORTED_FORMATS = array("text", "json", "html");
 $RADIO_VALUES = array("on", "off");
 
 // INIT
@@ -114,14 +114,15 @@ if ($format == "json"){
 else if ($format == "text") {
 	returnText($result);
 }
-else if ($format == "link") {
-	returnLink($result);
+else if ($format == "html") {
+	returnHtml($result);
 }
 else {
 	error_return("invalid format");
 }
 
 function returnJSON($data){
+	header('Content-Type: application/json');
 	print_r($data);
 }
 
@@ -133,15 +134,12 @@ function returnText($data){
 	}
 }
 
-function returnLink($data){
+function returnHtml($data){
+	header('Content-Type: text/html');
 	$arraydata = json_decode($data, true);
 	foreach ($arraydata as $item){
 		echo "<a href=" . $item . ">" . $item . "</a><br/>";
 	}
-}
-
-function returnXML($data){
-	returnJSON($data);
 }
 
 function error_return($msg){

@@ -23,7 +23,7 @@ URIs (one URI per line): <br/><textarea rows="10" cols="100" name="search-uri" /
   <input type="checkbox" name="pubinfo" checked />Pubinfo</td></tr>
 <tr><td>Return format:</td><td><input type="radio" name="format" value="text" required checked />text
   <input type="radio" name="format" value="json" required />JSON
-  <input type="radio" name="format" value="link" required />link</td></tr>
+  <input type="radio" name="format" value="html" required />HTML</td></tr>
 </table>
 </p>
 
