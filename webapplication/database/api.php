@@ -137,12 +137,15 @@ function returnText($data){
 function returnHtml($data){
 	header('Content-Type: text/html');
 	echo "<!DOCTYPE html>";
-	echo "<html><head><title>Results</title></head><body><ul>";
+	echo "<html><head>";
+	echo "<title>Results</title>";
+	echo "<link rel="stylesheet" href="plain.css" type="text/css" media="screen" title="Stylesheet" />";
+	echo "</head><body><table>";
 	$arraydata = json_decode($data, true);
 	foreach ($arraydata as $item){
-		echo "<li><a href=" . $item . ">" . $item . "</a></li>";
+		echo "<tr><td><a href=" . $item . ">" . $item . "</a></td></tr>";
 	}
-	echo "</ul></body></html>";
+	echo "</table></body></html>";
 }
 
 function error_return($msg){
