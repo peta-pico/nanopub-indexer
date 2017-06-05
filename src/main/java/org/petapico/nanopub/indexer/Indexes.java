@@ -1,4 +1,5 @@
 package org.petapico.nanopub.indexer;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -35,7 +36,6 @@ public class Indexes {
 		try {
 			nanopubIndexes = NanopubServerUtils.loadList(url);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			//e.printStackTrace();
 			System.out.printf("server error\n");
 		}
@@ -56,13 +56,14 @@ public class Indexes {
 					statements = np.getAssertion();
 					for (Statement statement : statements){
 						try {
-							Value object = statement.getObject();
+							//Value object = statement.getObject();
 							URI predicate = statement.getPredicate();
-							Resource subject = statement.getSubject();
+							//Resource subject = statement.getSubject();
 							
 							String predicateStr = predicate.toString();
 							if (predicateStr.equals("http://purl.org/nanopub/x/includesElement")){
-								childNodes ++;//System.out.printf("%s %s %s\n", object.toString(), predicate.toString(), subject.toString());
+								childNodes ++;
+								//System.out.printf("%s %s %s\n", object.toString(), predicate.toString(), subject.toString());
 							}
 						}
 						catch (Exception E){
@@ -105,7 +106,6 @@ public class Indexes {
 				try {
 					insertIndex(artifactCode, title, childNodes);
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					System.out.printf("insert error\n");
 				}
 			}
@@ -136,7 +136,6 @@ public class Indexes {
 		try {
 			new Indexes(args[0], args[1]).start();
 		} catch (ClassNotFoundException | SQLException e) {
-			// TODO Auto-generated catch block
 			//e.printStackTrace();
 			System.out.printf("object error\n");
 		}

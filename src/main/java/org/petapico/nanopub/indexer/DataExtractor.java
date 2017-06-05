@@ -3,6 +3,10 @@ package org.petapico.nanopub.indexer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 //import java.net.HttpURLConnection;
 //import java.net.MalformedURLException;
 //import java.net.URL;
@@ -21,23 +25,12 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.nanopub.MultiNanopubRdfHandler;
 import org.nanopub.MultiNanopubRdfHandler.NanopubHandler;
 import org.nanopub.Nanopub;
-import org.nanopub.NanopubUtils;
-import org.nanopub.extra.server.GetNanopub;
-import org.nanopub.extra.server.NanopubServerUtils;
-import org.nanopub.extra.server.ServerInfo;
-import org.nanopub.extra.server.ServerIterator;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.RDFParser;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
-
-import java.sql.DriverManager;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFHandlerException;
 
 public class DataExtractor {
 	public static final int CUR_AMOUNT_OF_NANOPUBS = 6370131;
@@ -78,7 +71,6 @@ public class DataExtractor {
 			try {
 				getNanopubPackage(page);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -108,7 +100,6 @@ public class DataExtractor {
 		try {
 			conn.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
