@@ -126,17 +126,18 @@ function returnJSON($data){
 }
 
 function returnText($data){
+	header('Content-Type: text/plain');
 	$arraydata = json_decode($data, true);
 	foreach ($arraydata as $item){
 		echo $item . PHP_EOL;
-	}	
+	}
 }
 
 function returnLink($data){
 	$arraydata = json_decode($data, true);
 	foreach ($arraydata as $item){
 		echo "<a href=" . $item . ">" . $item . "</a><br/>";
-	}	
+	}
 }
 
 function returnXML($data){
