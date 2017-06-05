@@ -77,8 +77,9 @@ if ($_GET['end_timestamp']){
 	$end_timestamp = $_GET['end_timestamp'];
 }
 if ($_GET['order']){
-	if ($_GET['order'] == 0){
-		$order = 0;
+	$o = $_GET['order']
+	if ($o == 0 || $o == 1 || $o == 2) {
+		$order = $o;
 	}
 }
 
