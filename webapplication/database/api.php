@@ -38,9 +38,14 @@ if (!in_array($format, $SUPPORTED_FORMATS, true)){
 }
 
 // PAGE
-$page = 0;
+$page = 1;
 if ($_GET['page']){
-	$page = $_GET['page'];
+	if ($_GET['page'] > 0){
+		$page = $_GET['page'];
+	}
+	else {
+		error_return("invalid page value");
+	}
 }
 
 // CHECK URI TYPES
