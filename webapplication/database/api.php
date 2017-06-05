@@ -143,7 +143,7 @@ function returnHtml($data){
 	echo "</head><body><table>";
 	$arraydata = json_decode($data, true);
 	foreach ($arraydata as $item){
-		echo "<tr><td><a href=" . $item . ">" . $item . "</a></td></tr>";
+		echo "<tr><td><code><a href=" . $item . ">" . $item . "</a></code></td></tr>";
 	}
 	echo "</table></body></html>";
 }
