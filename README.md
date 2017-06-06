@@ -169,10 +169,12 @@ http://petapico.d2s.labs.vu.nl/api/
 	+--------------+--------------+------+-----+---------+-------+
 
 
-### Index Created
+### Additional Indexes
 
-by Tobias:
+Tobias did this on 5/6 June 2017:
 
     mysql> create index timestamp_index on nanopubs (timestamp);
+    mysql> create index artifactCode_timestamp_index on nanopubs (artifactCode, timestamp);
+    mysql> create index timestamp_artifactCode_index on nanopubs (timestamp, artifactCode);
 
-not sure it worked...
+but that doesn't seem to help...
